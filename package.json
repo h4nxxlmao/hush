@@ -1,0 +1,64 @@
+{
+  "name": "@hanx/hush",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Zero-knowledge .env sync. Push and pull .env files across machines and teammates — encrypted before anything leaves your machine.",
+  "license": "MIT",
+  "author": "h4nxxlmao",
+  "type": "module",
+  "bin": {
+    "hush": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "env",
+    "dotenv",
+    "secrets",
+    "environment",
+    "sync",
+    "zero-knowledge",
+    "encryption",
+    "cli",
+    "libsodium"
+  ],
+  "homepage": "https://hush.hanx.pro",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/h4nxxlmao/hush.git"
+  },
+  "bugs": {
+    "url": "https://github.com/h4nxxlmao/hush/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@clack/prompts": "1.8.1",
+    "@hush/crypto": "workspace:*",
+    "@hush/schemas": "workspace:*",
+    "@napi-rs/keyring": "2.1.1",
+    "citty": "0.2.2",
+    "dotenv": "18.0.8",
+    "open": "11.0.4",
+    "picocolors": "1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "tsup": "9.0.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}

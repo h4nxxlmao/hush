@@ -1,0 +1,8 @@
+packages:
+  - shared/*
+
+# pnpm >= 10 blocks dependency lifecycle scripts by default. esbuild links its
+# platform binary and keyring ships native bindings, so both need theirs.
+allowBuilds:
+  esbuild: true
+  '@napi-rs/keyring': true

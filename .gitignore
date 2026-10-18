@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build output (published to npm from here)
+dist/
+
+# Test output and local state
+coverage/
+test-results/
+.data/
+
+# Env files — only the example is committed
+.env
+.env.*
+!.env.example
+
+# Logs and editors
+*.log
+.DS_Store
+Thumbs.db
+.idea/
