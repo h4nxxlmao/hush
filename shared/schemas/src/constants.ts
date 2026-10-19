@@ -19,8 +19,8 @@ export const PRODUCT = {
   builtByUrl: "https://hanx.pro",
   // Placeholder until the public repo exists. Flagged in MORNING_REPORT.md.
   githubUrl: "https://github.com/h4nxxlmao/hush",
-  cliPackage: "@hanx/hush",
-  installCommand: "npm i -g @hanx/hush",
+  cliPackage: "@xnah/hush",
+  installCommand: "npm i -g @xnah/hush",
   betaNote: "Beta. Don't store credentials you can't rotate.",
 } as const;
 

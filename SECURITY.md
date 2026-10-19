@@ -76,8 +76,8 @@ project key (32 random bytes, generated on `hush init`)
 pnpm --filter @hush/crypto test     # known-answer, tamper, AAD-mismatch, wrong-key tests
 pnpm --filter backend test           # includes a test that dumps every table and asserts
                                      # the plaintext secret value/name appears nowhere
-pnpm --filter @hanx/hush test             # parser and diff edge cases
-pnpm --filter @hanx/hush test:e2e         # the real CLI against a live backend
+pnpm --filter @xnah/hush test             # parser and diff edge cases
+pnpm --filter @xnah/hush test:e2e         # the real CLI against a live backend
 ```
 
 The backend test suite is the strongest evidence for the core claim: it pushes a file containing a known secret, then serialises **every row of every table** and asserts the plaintext value and the variable name do not occur anywhere.

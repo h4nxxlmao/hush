@@ -8,10 +8,10 @@
 
 - Website and dashboard: [hush.hanx.pro](https://hush.hanx.pro)
 - API: `https://api.hush.hanx.pro`
-- Package: `@hanx/hush` (binary `hush`)
+- Package: `@xnah/hush` (binary `hush`)
 
 ```bash
-npm i -g @hanx/hush
+npm i -g @xnah/hush
 hush login
 hush init
 hush push -e dev

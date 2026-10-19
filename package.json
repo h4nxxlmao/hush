@@ -1,5 +1,5 @@
 {
-  "name": "@hanx/hush",
+  "name": "@xnah/hush",
   "version": "0.1.0",
   "private": false,
   "description": "Zero-knowledge .env sync. Push and pull .env files across machines and teammates — encrypted before anything leaves your machine.",
