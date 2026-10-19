@@ -17,7 +17,7 @@ import { readProjectLink, writeProjectLink, PROJECT_LINK_FILE } from "../lib/sta
 import { info, isJsonMode, printJson, success, warn } from "../lib/ui";
 
 /**
- * `hush init` — link this folder to a project (or create one).
+ * `hush init`, link this folder to a project (or create one).
  *
  * Creating a project also creates its project key, client-side, wrapped for the
  * owner's public key. The server stores the wrapped blob and can never open it.
@@ -70,7 +70,7 @@ export const initCommand = defineCommand({
             `You are not a member of "${explicitSlug}".`,
             projects.length > 0
               ? `Projects you belong to: ${projects.map((p) => p.slug).join(", ")}`
-              : "You have no projects yet — run `hush init` without --project to create one.",
+              : "You have no projects yet, run `hush init` without --project to create one.",
           );
         }
         slug = explicitSlug;
@@ -127,7 +127,7 @@ export const initCommand = defineCommand({
       const envNames = detail.environments.map((env) => env.name);
       if (!envNames.includes(defaultEnv)) {
         warn(
-          `Project has no "${defaultEnv}" environment — defaulting to "${envNames[0] ?? "dev"}".`,
+          `Project has no "${defaultEnv}" environment, defaulting to "${envNames[0] ?? "dev"}".`,
         );
         defaultEnv = envNames[0] ?? "dev";
       }
@@ -161,7 +161,7 @@ export const initCommand = defineCommand({
       }
 
       success(`Linked ${cwd} to ${detail.project.slug} (default env: ${defaultEnv}).`);
-      info(`Wrote ${PROJECT_LINK_FILE} — no secrets in it; commit it so teammates link instantly.`);
+      info(`Wrote ${PROJECT_LINK_FILE}, no secrets in it; commit it so teammates link instantly.`);
       info(`Next: hush push -e ${defaultEnv}`);
     });
   },

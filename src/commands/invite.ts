@@ -13,7 +13,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { bold, info, isJsonMode, printJson, success } from "../lib/ui";
 
 /**
- * `hush invite @teammate` — wrap the project key for their public key and send
+ * `hush invite @teammate`, wrap the project key for their public key and send
  * the invite. Only the sealed blob is uploaded; the server still cannot open it.
  */
 export const inviteCommand = defineCommand({

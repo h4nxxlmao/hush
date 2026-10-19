@@ -29,7 +29,7 @@ export function ensureGitignoreEntries(
   }
 
   if (added.length > 0) {
-    const block = `${existing && !existing.endsWith("\n") ? "\n" : ""}${existing ? "\n" : ""}# hush.hanx.pro — never commit real secrets\n${added.join("\n")}\n`;
+    const block = `${existing && !existing.endsWith("\n") ? "\n" : ""}${existing ? "\n" : ""}# hush.hanx.pro, never commit real secrets\n${added.join("\n")}\n`;
     writeFileSync(path, existing + block, "utf8");
   }
 

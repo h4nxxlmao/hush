@@ -18,7 +18,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { cyan, info, isJsonMode, printJson, success } from "../lib/ui";
 
 /**
- * `hush rollback -e prod 7` — bring back the content of an old version.
+ * `hush rollback -e prod 7`, bring back the content of an old version.
  *
  * Because the version number is part of the AAD, this is a fresh encryption of
  * the old content, pushed as a new version. History keeps both; nothing is
@@ -101,7 +101,7 @@ export const rollbackCommand = defineCommand({
         success(
           `Rolled back to v${target} as ${cyan(`v${response.version.version}`)} in ${environment.name}.`,
         );
-        info("This is a new version — history keeps both, and the audit log shows the rollback.");
+        info("This is a new version, history keeps both, and the audit log shows the rollback.");
       } catch (error) {
         if (error instanceof HushApiError && error.code === "conflict") {
           const details = error.details as { local?: number; remote?: number } | undefined;

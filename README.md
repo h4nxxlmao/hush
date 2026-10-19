@@ -2,7 +2,7 @@
 
 **Your .env, everywhere. Encrypted before it leaves your machine.**
 
-`hush` is a zero-knowledge `.env` sync CLI. Push and pull `.env` files across machines and teammates — everything is encrypted on your machine, so the server only ever stores ciphertext. Diff versions, check for missing variables, inject variables into a command without writing a file, and roll back.
+`hush` is a zero-knowledge `.env` sync CLI. Push and pull `.env` files across machines and teammates, everything is encrypted on your machine, so the server only ever stores ciphertext. Diff versions, check for missing variables, inject variables into a command without writing a file, and roll back.
 
 > **Beta. Don't store credentials you can't rotate.**
 
@@ -30,7 +30,7 @@ Encryption happens locally, with libsodium only:
 | Project key wrapping | Anonymous sealed boxes (`crypto_box_seal`) |
 | `.env` file encryption | XChaCha20-Poly1305 AEAD, AAD `projectId\|environment\|version\|keyVersion` |
 
-The whole file is one blob, so **variable names are encrypted too**. Ciphertext cannot be moved between environments or versions without decryption failing loudly on the client. The server sees project and environment names, sizes, timestamps and who pushed — never a name, a value, a key or a passphrase. The honest limits (including what a compromised server could do) are in [SECURITY.md](./SECURITY.md).
+The whole file is one blob, so **variable names are encrypted too**. Ciphertext cannot be moved between environments or versions without decryption failing loudly on the client. The server sees project and environment names, sizes, timestamps and who pushed, never a name, a value, a key or a passphrase. The honest limits (including what a compromised server could do) are in [SECURITY.md](./SECURITY.md).
 
 ## Commands
 
@@ -50,7 +50,7 @@ The whole file is one blob, so **variable names are encrypted too**. Ciphertext 
 | `hush rollback -e <env> <version>` | Re-encrypt an old version's content as a new version (history keeps both) |
 | `hush invite <github-username> [--role member]` | Wrap the project key for the invitee and send the invite |
 | `hush members` | Members, roles and pending invites |
-| `hush revoke <github-username>` | Revoke and rotate: new project key, every environment re-encrypted, everyone else re-wrapped — all client-side |
+| `hush revoke <github-username>` | Revoke and rotate: new project key, every environment re-encrypted, everyone else re-wrapped, all client-side |
 | `hush key export` / `key import` | Move your sealed key between machines (the export is ciphertext; useless without your passphrase) |
 | `hush lock` / `unlock` | Clear or restore the cached private key |
 | `hush doctor` | API reachability, token validity, keychain, key setup, `.gitignore`, file permissions, linked project |
@@ -62,7 +62,7 @@ Exit codes: `0` success, `1` general error, `2` usage, `3` auth, `4` conflict.
 ## Where state lives
 
 - CLI token and decrypted private key cache: OS keychain (macOS Keychain, Windows Credential Manager, secret-service), with a `0600` file fallback under `~/.config/hush` and a warning when it is used.
-- Project link: `.hush.json` in the repo (project id, slug, default environment — no secrets; commit it so teammates link instantly).
+- Project link: `.hush.json` in the repo (project id, slug, default environment, no secrets; commit it so teammates link instantly).
 - Scripts and CI overrides: `HUSH_API_URL`, `HUSH_STATE_DIR`, `HUSH_KEYCHAIN=file`, `HUSH_TOKEN`.
 
 ## Layout
@@ -70,7 +70,7 @@ Exit codes: `0` success, `1` general error, `2` usage, `3` auth, `4` conflict.
 ```
 src/            commands, API client, keychain, dotenv handling, UI
 tests/          unit tests + an end-to-end suite that runs the built binary
-shared/schemas  the API contract (Zod) — shared with the server and the dashboard
+shared/schemas  the API contract (Zod), shared with the server and the dashboard
 shared/crypto   the libsodium primitives (identical code runs in the browser)
 ```
 

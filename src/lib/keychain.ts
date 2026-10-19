@@ -4,7 +4,7 @@ import { ensureStateDir, removeFile, statePath } from "./state";
 
 /**
  * Secret storage: the OS keychain first, a 0600 file as the fallback (with a
- * warning). `HUSH_KEYCHAIN=file` forces the file backend — used by tests and
+ * warning). `HUSH_KEYCHAIN=file` forces the file backend, used by tests and
  * headless machines where the keychain isn't reachable.
  */
 
@@ -44,7 +44,7 @@ function writeFileSecret(account: string, value: string): void {
   if (!fileWarningPrinted) {
     fileWarningPrinted = true;
     console.error(
-      "[hush] OS keychain unavailable — secrets are cached in ~/.config/hush with 0600 permissions.",
+      "[hush] OS keychain unavailable, secrets are cached in ~/.config/hush with 0600 permissions.",
     );
   }
 }

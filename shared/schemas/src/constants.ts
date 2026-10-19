@@ -7,11 +7,7 @@ export const PRODUCT = {
   name: "hush.hanx.pro",
   title: "hush.hanx.pro",
   tagline: "Your .env, everywhere. Encrypted before it leaves your machine.",
-  altTaglines: [
-    "Stop pasting secrets into chat.",
-    "Sync your environment, not your secrets.",
-    "The server only ever sees ciphertext.",
-  ],
+  altTaglines: ["Stop pasting secrets into chat.", "Sync your environment, not your secrets."],
   url: "https://hush.hanx.pro",
   apiUrl: "https://api.hush.hanx.pro",
   docsPath: "/docs",
@@ -84,7 +80,7 @@ export const DEVICE_FLOW = {
   DEVICE_CODE_BYTES: 32,
 } as const;
 
-/** Key derivation bounds accepted by the server (it never derives — it only sanity-checks). */
+/** Key derivation bounds accepted by the server (it never derives, it only sanity-checks). */
 export const KDF = {
   ALGORITHM: "argon2id",
   SALT_BYTES: 16,

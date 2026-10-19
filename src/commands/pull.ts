@@ -32,7 +32,7 @@ import {
 } from "../lib/ui";
 
 /**
- * `hush pull` — fetch and decrypt the latest version.
+ * `hush pull`, fetch and decrypt the latest version.
  *
  * An existing local file is never clobbered silently: the diff is shown (values
  * masked) and the user confirms, unless --force/--yes. The AAD binds the file to

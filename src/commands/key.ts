@@ -15,7 +15,7 @@ import { readIdentity } from "../lib/state";
 import { info, isJsonMode, printJson, success, warn } from "../lib/ui";
 
 /**
- * `hush key export/import` — move the key to another machine.
+ * `hush key export/import`, move the key to another machine.
  *
  * The export file contains the *sealed* private key (the same ciphertext the
  * server holds). It is safe to move over any channel: without the passphrase it
@@ -68,7 +68,7 @@ const keyExportCommand = defineCommand({
         return;
       }
       success(`Exported your sealed key to ${path}.`);
-      info("It is ciphertext — safe to carry, useless without your passphrase.");
+      info("It is ciphertext, safe to carry, useless without your passphrase.");
     });
   },
 });

@@ -6,7 +6,7 @@ The API contract for hush.hanx.pro. Zod schemas, inferred TypeScript types and s
 - the frontend (`hush.hanx.pro/frontend`)
 - the backend (`hush.hanx.pro/backend`)
 
-If the clients and the server disagree about a request or response shape, the fix belongs here — this package is the single source of truth.
+If the clients and the server disagree about a request or response shape, the fix belongs here, this package is the single source of truth.
 
 ## What's inside
 

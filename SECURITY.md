@@ -1,6 +1,6 @@
 # Security model
 
-hush.hanx.pro syncs `.env` files between machines and teammates. Everything is encrypted **on your machine** before it is uploaded, so the service only ever stores ciphertext. This document explains exactly what that means — including where it stops protecting you.
+hush.hanx.pro syncs `.env` files between machines and teammates. Everything is encrypted **on your machine** before it is uploaded, so the service only ever stores ciphertext. This document explains exactly what that means, including where it stops protecting you.
 
 If you find a problem, please open an issue in the repository. Please do not test against other people's accounts.
 
@@ -22,7 +22,7 @@ Only libsodium primitives are used. There are no home-made constructions.
 | "Same content?" checks | Keyed BLAKE2b over the plaintext, under a subkey derived from the project key |
 | CLI tokens / device codes / invite tokens | SHA-256 hashes at rest; raw values exist once, on the client |
 
-The whole file is encrypted as one blob — **variable names included**. A ciphertext blob cannot be replayed into another environment, another version, or another key version without failing to decrypt on the client.
+The whole file is encrypted as one blob, **variable names included**. A ciphertext blob cannot be replayed into another environment, another version, or another key version without failing to decrypt on the client.
 
 ## 2. Key hierarchy
 
@@ -37,7 +37,7 @@ project key (32 random bytes, generated on `hush init`)
 
 * The passphrase, the recovery key and both plaintext keys never leave your device.
 * The server stores: `publicKey`, two sealed private-key copies, the KDF salt/params, one wrapped project key per member, and ciphertext.
-* The KDF parameters are sanity-checked by the server (bounds only — it cannot and does not derive anything).
+* The KDF parameters are sanity-checked by the server (bounds only, it cannot and does not derive anything).
 
 ## 3. What the server can see, and what it can never see
 
@@ -48,7 +48,7 @@ project key (32 random bytes, generated on `hush init`)
 ## 4. Honest limits
 
 * **A compromised server could serve malicious JavaScript.** The dashboard decrypts in the browser when you ask it to. That is opt-in and labelled as less secure than the CLI; the CLI is the recommended way to decrypt because no server-controlled code runs in the path between your key and your screen.
-* **Metadata is metadata.** The server sees project/environment names and sizes. Don't put secrets in project, environment, or version message fields — the UI and CLI warn about this.
+* **Metadata is metadata.** The server sees project/environment names and sizes. Don't put secrets in project, environment, or version message fields, the UI and CLI warn about this.
 * **Revoked members keep what they already pulled.** Revoking rotates the project key and re-encrypts the latest version of every environment, so a revoked member cannot read anything pushed afterwards. Rotate the underlying secrets to genuinely cut them off.
 * **Losing both the passphrase and the recovery key means the data is unrecoverable.** By design. Nobody at hush.hanx.pro can help.
 * **Beta.** Don't store credentials you can't rotate.
@@ -65,7 +65,7 @@ project key (32 random bytes, generated on `hush init`)
 ## 6. Server-side hygiene
 
 * The backend never imports the crypto package (enforced by ESLint) and has no code path that could decrypt anything.
-* Request bodies are never logged. Structured JSON logs contain method, path, status, duration and ids — no headers, tokens, ciphertext or secrets.
+* Request bodies are never logged. Structured JSON logs contain method, path, status, duration and ids, no headers, tokens, ciphertext or secrets.
 * Ciphertext lives in Postgres (Neon) over the serverless driver; devices, rate limits and temporary state live in Postgres/Redis because serverless instances hold nothing between requests.
 * Security headers on both apps: CSP with a per-request nonce (no `unsafe-inline` for scripts), `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Permissions-Policy`.
 * Preview deployments read CORS/cookie settings from the environment so no code changes are needed.

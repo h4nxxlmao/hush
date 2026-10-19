@@ -26,7 +26,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { bold, cyan, info, isJsonMode, printJson, success, warn } from "../lib/ui";
 
 /**
- * `hush revoke @teammate` — remove a member and rotate the project key.
+ * `hush revoke @teammate`, remove a member and rotate the project key.
  *
  * The rotation happens here, on the client:
  *  1. generate a fresh project key (keyVersion + 1)

@@ -16,7 +16,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { cyan, info, isJsonMode } from "../lib/ui";
 
 /**
- * `hush run -e dev -- <command>` — inject variables into a process without
+ * `hush run -e dev -- <command>`, inject variables into a process without
  * writing any file. The plaintext lives in this process's memory only, and the
  * child inherits stdio so interactive commands work.
  */
@@ -80,7 +80,7 @@ export const runCommand = defineCommand({
 
       if (!isJsonMode()) {
         info(
-          `Running with ${parsed.vars.size} variables from ${cyan(`${slug}/${environment.name}`)} (v${latest.version.version}) — nothing written to disk.`,
+          `Running with ${parsed.vars.size} variables from ${cyan(`${slug}/${environment.name}`)} (v${latest.version.version}), nothing written to disk.`,
         );
       }
 

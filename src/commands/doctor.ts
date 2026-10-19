@@ -23,7 +23,7 @@ import {
 } from "../lib/ui";
 
 /**
- * `hush doctor` — the support triage that users can run themselves.
+ * `hush doctor`, the support triage that users can run themselves.
  * Checks API reachability, token validity, keychain, key setup, .gitignore
  * coverage, file permissions, and the linked project.
  */
@@ -53,7 +53,7 @@ export const doctorCommand = defineCommand({
       const token = await loadToken();
       let client: Awaited<ReturnType<typeof requireClient>> | null = null;
       if (!token) {
-        results.push({ check: "token", ok: false, detail: "no token — run `hush login`" });
+        results.push({ check: "token", ok: false, detail: "no token, run `hush login`" });
       } else {
         try {
           const me = await anonymousWithToken(base, token);
@@ -93,7 +93,7 @@ export const doctorCommand = defineCommand({
             ok: Boolean(keys),
             detail: keys
               ? `${keys.kdfParams.algorithm} · public key ${keys.publicKey.slice(0, 10)}…`
-              : "not set up — run `hush login`",
+              : "not set up, run `hush login`",
           });
         } catch (error) {
           results.push({
@@ -112,7 +112,7 @@ export const doctorCommand = defineCommand({
         warnOnly: true,
         detail: gitignore.covered
           ? "covers .env files"
-          : `missing: ${gitignore.missing.join(", ")} — run \`hush init\``,
+          : `missing: ${gitignore.missing.join(", ")}, run \`hush init\``,
       });
 
       // 6. .env permissions
@@ -124,7 +124,7 @@ export const doctorCommand = defineCommand({
           ok: !perms.worldReadable,
           warnOnly: true,
           detail: perms.supported
-            ? `mode ${perms.mode}${perms.worldReadable ? " (readable by others — chmod 600 .env)" : ""}`
+            ? `mode ${perms.mode}${perms.worldReadable ? " (readable by others, chmod 600 .env)" : ""}`
             : "n/a on Windows",
         });
       } else {

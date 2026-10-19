@@ -4,7 +4,7 @@ import { globalArgs, requireClient, runWithArgs } from "../lib/command";
 import { readProjectLink } from "../lib/state";
 import { bold, bytes, dim, info, isJsonMode, out, printJson, relativeTime, table } from "../lib/ui";
 
-/** `hush ls` — every project you belong to, with each environment's latest state. */
+/** `hush ls`, every project you belong to, with each environment's latest state. */
 export const lsCommand = defineCommand({
   meta: { name: "ls", description: "List projects and environments" },
   args: { ...globalArgs },
@@ -44,9 +44,9 @@ export const lsCommand = defineCommand({
           rows.push([
             `${marker}${project.slug}`,
             environment.name,
-            environment.latestVersion > 0 ? `v${environment.latestVersion}` : "—",
+            environment.latestVersion > 0 ? `v${environment.latestVersion}` : "-",
             environment.lastPushedAt ? relativeTime(new Date(environment.lastPushedAt)) : "never",
-            environment.latestSizeBytes != null ? bytes(environment.latestSizeBytes) : "—",
+            environment.latestSizeBytes != null ? bytes(environment.latestSizeBytes) : "-",
           ]);
         }
       }

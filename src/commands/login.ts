@@ -11,7 +11,7 @@ import { writeIdentity } from "../lib/state";
 import { bold, createSpinner, info, isJsonMode, out, printJson, success, warn } from "../lib/ui";
 
 /**
- * `hush login` — RFC 8628 device flow, then key setup on first login.
+ * `hush login`, RFC 8628 device flow, then key setup on first login.
  *
  * 1. ask for a device code, open the browser at /device with the code
  * 2. poll until the user approves (slow_down respected)
@@ -156,7 +156,7 @@ export const loginCommand = defineCommand({
       if (!isJsonMode()) {
         out();
         info("Setting up encryption. Your keys are generated here, never on the server.");
-        info("Pick a passphrase nobody can guess — it protects your private key on every device.");
+        info("Pick a passphrase nobody can guess, it protects your private key on every device.");
         out();
       }
       requireInteractive("set up a passphrase");
@@ -176,7 +176,7 @@ export const loginCommand = defineCommand({
       }
 
       out();
-      note(material.recoveryKey, "Recovery key — shown once. Save it now (password manager).");
+      note(material.recoveryKey, "Recovery key, shown once. Save it now (password manager).");
       warn("If you lose both the passphrase and this recovery key, your data is unrecoverable. By design.");
       if (args.yes) {
         success("Keys set up. You are ready to `hush init`.");

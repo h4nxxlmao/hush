@@ -7,8 +7,8 @@ import { CryptoError } from "./errors";
  * Env file sealing.
  *
  * The whole serialized file (key names included) is encrypted as one blob with
- * XChaCha20-Poly1305. The AAD binds the ciphertext to its exact coordinates —
- * project, environment, version and key version — so a hostile server cannot
+ * XChaCha20-Poly1305. The AAD binds the ciphertext to its exact coordinates ,
+ * project, environment, version and key version, so a hostile server cannot
  * replay a `prod` blob into `dev`, or an old version into a new slot, without
  * decryption failing loudly on the client.
  */
@@ -95,8 +95,8 @@ export async function sealEnvFile(
 }
 
 /**
- * Open a sealed env file. Any mismatch — tampered bytes, wrong key, wrong AAD
- * coordinates — throws CryptoError("decrypt_failed") with a message that never
+ * Open a sealed env file. Any mismatch, tampered bytes, wrong key, wrong AAD
+ * coordinates, throws CryptoError("decrypt_failed") with a message that never
  * echoes key material.
  */
 export async function openEnvFile(

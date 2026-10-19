@@ -51,7 +51,7 @@ function hintFor(error: HushApiError): string | undefined {
     case "rate_limited":
       return "Wait a moment and try again.";
     case "limit_exceeded":
-      return "Free-tier limits apply — manage projects at https://hush.hanx.pro.";
+      return "Free-tier limits apply, manage projects at https://hush.hanx.pro.";
     case "payload_too_large":
       return "env files are capped at 1 MB.";
     default:

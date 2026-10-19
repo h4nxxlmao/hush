@@ -21,7 +21,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { green, info, isJsonMode, printJson, red, warn, yellow } from "../lib/ui";
 
 /**
- * `hush check` — the CI/pre-commit guard.
+ * `hush check`, the CI/pre-commit guard.
  *
  * Compares your local .env against .env.example (missing = failure) and,
  * with --remote, against the deployed environment. Exit code 1 when anything
@@ -65,7 +65,7 @@ export const checkCommand = defineCommand({
         missing.push(...result.missing);
         extra.push(...result.extra);
       } else {
-        warn(`${args.example} not found — skipping the example comparison.`);
+        warn(`${args.example} not found, skipping the example comparison.`);
       }
 
       if (args.remote) {
@@ -77,7 +77,7 @@ export const checkCommand = defineCommand({
         const environment = pickEnvironment(detail, args.env as string | undefined);
         const latest = await fetchLatestOrNull(client, slug, environment.name);
         if (!latest) {
-          warn(`No versions in "${environment.name}" yet — skipping the remote comparison.`);
+          warn(`No versions in "${environment.name}" yet, skipping the remote comparison.`);
         } else {
           compared.push(`${slug}/${environment.name} v${latest.version.version}`);
           const { privateKey, publicKey } = await requirePrivateKey(client, { prompt: true });

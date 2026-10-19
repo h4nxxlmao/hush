@@ -3,7 +3,7 @@ import { globalArgs, requireClient, runWithArgs } from "../lib/command";
 import { loadProjectDetail, resolveSlug } from "../lib/project-ops";
 import { bold, dim, isJsonMode, out, printJson, relativeTime, table } from "../lib/ui";
 
-/** `hush members` — who is in this project and at which role/key version. */
+/** `hush members`, who is in this project and at which role/key version. */
 export const membersCommand = defineCommand({
   meta: { name: "members", description: "List project members and pending invites" },
   args: {
@@ -29,8 +29,8 @@ export const membersCommand = defineCommand({
       for (const member of detail.members) {
         rows.push([
           member.role,
-          member.githubUsername ? `@${member.githubUsername}` : "—",
-          member.name ?? "—",
+          member.githubUsername ? `@${member.githubUsername}` : "-",
+          member.name ?? "-",
           `v${member.keyVersion}`,
           relativeTime(new Date(member.createdAt)),
         ]);

@@ -16,7 +16,7 @@ import { PRODUCT } from "@hush/schemas";
  * Local state: where the token, the key cache and the project link live.
  *
  * HUSH_STATE_DIR and HUSH_API_URL exist for tests and advanced setups
- * (CI machines, multiple profiles) — the defaults are what users get.
+ * (CI machines, multiple profiles), the defaults are what users get.
  *
  * The product used to be called envhx; installs from before the rename keep
  * working. Two deliberate legacy paths survive here:

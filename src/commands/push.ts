@@ -32,7 +32,7 @@ import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { bytes, cyan, green, info, isJsonMode, printJson, success } from "../lib/ui";
 
 /**
- * `hush push` — encrypt the file locally and upload the ciphertext.
+ * `hush push`, encrypt the file locally and upload the ciphertext.
  *
  * Conflict rule: the client sends the version it last saw (`baseVersion`). If
  * the server has moved on, the push fails with 409 and both numbers are shown.
@@ -163,7 +163,7 @@ export const pushCommand = defineCommand({
             if (details?.remote !== undefined && details?.local !== undefined) {
               throw CliError.conflict(
                 `Your copy is behind: local v${details.local}, remote v${details.remote}.`,
-                "Run `hush pull` first, then push again — or `hush push --force` to overwrite.",
+                "Run `hush pull` first, then push again, or `hush push --force` to overwrite.",
               );
             }
           }

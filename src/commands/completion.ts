@@ -3,7 +3,7 @@ import { globalArgs, runWithArgs } from "../lib/command";
 import { isJsonMode, out, printJson } from "../lib/ui";
 
 /**
- * `hush completion <shell>` — printable completion scripts for bash, zsh and
+ * `hush completion <shell>`, printable completion scripts for bash, zsh and
  * fish. Generated from the same command list the CLI registers, so they cannot
  * drift far.
  */
@@ -54,7 +54,7 @@ function bashScript(): string {
   const cases = Object.entries(COMMAND_FLAGS)
     .map(([command, flags]) => `      ${command}) opts="${[...flags, ...GLOBAL_FLAGS].join(" ")}" ;;`)
     .join("\n");
-  return `# hush bash completion — add to ~/.bashrc:
+  return `# hush bash completion, add to ~/.bashrc:
 #   eval "$(hush completion bash)"
 _hush_completions() {
   local cur prev command opts
@@ -87,7 +87,7 @@ function zshScript(): string {
     )
     .join("\n");
   return `#compdef hush
-# hush zsh completion — add to ~/.zshrc:
+# hush zsh completion, add to ~/.zshrc:
 #   eval "$(hush completion zsh)"
 _hush() {
   local -a commands
@@ -117,7 +117,7 @@ function fishScript(): string {
           `complete -c hush -n "__fish_seen_subcommand_from ${command}" -l ${flag.replace(/^--/, "")}`,
       ),
   );
-  return `# hush fish completion — add to ~/.config/fish/config.fish:
+  return `# hush fish completion, add to ~/.config/fish/config.fish:
 #   hush completion fish > ~/.config/fish/completions/hush.fish
 ${[...lines, ...flagLines].join("\n")}
 complete -c hush -l json -d "JSON output"

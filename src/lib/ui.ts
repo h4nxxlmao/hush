@@ -188,7 +188,7 @@ export function createSpinner(label: string): Spinner {
   return {
     update: (message: string) => spin.message(message),
     stop: (message?: string) => spin.stop(message ?? label),
-    fail: (message?: string) => spin.stop(`${message ?? label} — failed`),
+    fail: (message?: string) => spin.stop(`${message ?? label}, failed`),
   };
 }
 

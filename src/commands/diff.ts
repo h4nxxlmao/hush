@@ -30,7 +30,7 @@ import {
 } from "../lib/ui";
 
 /**
- * `hush diff` — the local file against a remote version (latest by default).
+ * `hush diff`, the local file against a remote version (latest by default).
  * Values are masked as •••••••• unless --reveal is passed.
  */
 export const diffCommand = defineCommand({
@@ -108,7 +108,7 @@ export const diffCommand = defineCommand({
       }
 
       if (summary === "No changes.") {
-        success(`No differences — your file matches v${target.version.version} exactly.`);
+        success(`No differences, your file matches v${target.version.version} exactly.`);
         return;
       }
 

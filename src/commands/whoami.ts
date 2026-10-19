@@ -47,7 +47,7 @@ export const whoamiCommand = defineCommand({
       out(
         table([
           ["user", `@${me.user.githubUsername ?? me.user.id} (${me.user.name ?? "no name"})`],
-          ["email", me.user.email ?? "—"],
+          ["email", me.user.email ?? "-"],
           ["device", payload.device],
           [
             "keychain",
@@ -57,7 +57,7 @@ export const whoamiCommand = defineCommand({
             "keys",
             keys.keys
               ? `${cached ? "unlocked on this machine" : "locked"} (${keys.keys.kdfParams.algorithm}, public key ${keys.keys.publicKey.slice(0, 8)}…)`
-              : "not set up yet — run `hush login`",
+              : "not set up yet, run `hush login`",
           ],
           ["project", link ? `${link.projectSlug} (default env: ${link.defaultEnv})` : "not linked here"],
         ]),

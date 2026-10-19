@@ -56,7 +56,7 @@ export function pickEnvironment(detail: ProjectDetailResponse, name?: string): E
 export function requireRole(member: ProjectMember, min: Role): void {
   if (!roleAtLeast(member.role, min)) {
     throw CliError.auth(
-      `Your role (${member.role}) cannot do this — it needs ${min} or higher.`,
+      `Your role (${member.role}) cannot do this, it needs ${min} or higher.`,
       "Ask a project admin for a role change.",
     );
   }
@@ -74,7 +74,7 @@ export function findMe(detail: ProjectDetailResponse, userId: string): ProjectMe
 }
 
 /**
- * Unwrap the project key. The wrapped blob arrives in `detail.myKey` — it is
+ * Unwrap the project key. The wrapped blob arrives in `detail.myKey`, it is
  * sealed to this user's public key, so only their private key can open it.
  */
 export async function openProjectKey(

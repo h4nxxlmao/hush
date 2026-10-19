@@ -221,7 +221,7 @@ export const projectDetailResponseSchema = z.object({
   invites: z.array(inviteSchema),
   /**
    * The requesting member's own sealed project key. Sealed to their public key,
-   * so exposing it to them changes nothing — and every client needs it to work.
+   * so exposing it to them changes nothing, and every client needs it to work.
    */
   myKey: z
     .object({

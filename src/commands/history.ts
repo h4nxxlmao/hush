@@ -5,7 +5,7 @@ import { fetchLatestOrNull, findMe, loadProjectDetail, pickEnvironment, resolveS
 import { loadIdentity } from "../lib/session";
 import { bold, bytes, dim, info, isJsonMode, out, printJson, relativeTime, table } from "../lib/ui";
 
-/** `hush history` — who pushed what, when, and how big it was. */
+/** `hush history`, who pushed what, when, and how big it was. */
 export const historyCommand = defineCommand({
   meta: { name: "history", description: "Show version history for an environment" },
   args: {
@@ -55,7 +55,7 @@ export const historyCommand = defineCommand({
       }
       out(bold(table(rows)));
       if (latest) {
-        info(`Latest: v${latest.version.version} — the server has only ever held ciphertext.`);
+        info(`Latest: v${latest.version.version}, the server has only ever held ciphertext.`);
       }
     });
   },
