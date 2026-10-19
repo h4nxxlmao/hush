@@ -4,8 +4,10 @@ Thanks for taking a look. This is a small project with one hard rule: the server
 
 ## Requirements
 
-- Node 20 or newer (22 recommended; see `.nvmrc`)
+- Node 22.13 or newer for development (pnpm 11 needs it). CI runs Node 22 and 24.
 - pnpm 11 (`corepack enable` picks up the version pinned in `package.json`)
+
+The published CLI itself runs on Node 20 and newer; only the development toolchain requires 22.13.
 
 ## Setup
 

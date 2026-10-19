@@ -1,1 +1,1 @@
-﻿fix(ci): let pnpm/action-setup read the version from packageManager
+﻿fix(ci): run on Node 22 and 24, pnpm 11 requires Node 22.13
