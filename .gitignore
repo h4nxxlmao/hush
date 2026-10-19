@@ -3,6 +3,7 @@ node_modules/
 
 # Build output (published to npm from here)
 dist/
+.release/
 
 # Test output and local state
 coverage/

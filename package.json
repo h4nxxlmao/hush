@@ -6,6 +6,7 @@
   "license": "MIT",
   "author": "h4nxxlmao",
   "type": "module",
+  "packageManager": "pnpm@11.20.0",
   "bin": {
     "hush": "./dist/index.js"
   },
@@ -43,12 +44,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prepublishOnly": "pnpm build && pnpm test"
   },
   "dependencies": {
     "@clack/prompts": "1.8.1",
-    "@hush/crypto": "workspace:*",
-    "@hush/schemas": "workspace:*",
     "@napi-rs/keyring": "2.1.1",
     "citty": "0.2.2",
     "dotenv": "18.0.8",
@@ -56,9 +57,15 @@
     "picocolors": "1.1.1"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@hush/crypto": "workspace:*",
+    "@hush/schemas": "workspace:*",
     "@types/node": "26.6.5",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
     "tsup": "9.0.0",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
     "vitest": "5.0.5"
   }
 }

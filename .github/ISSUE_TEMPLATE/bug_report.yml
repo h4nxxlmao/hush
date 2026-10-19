@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in the CLI misbehaved. Please do not include secrets or decrypted .env values.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Before you paste anything: **redact secrets**. Never include
+        passphrases, recovery keys, tokens or decrypted `.env` values. Ciphertext and sizes are fine.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: The command you ran, what you expected, and what you got instead.
+      placeholder: |
+        $ hush push -e dev
+        expected: version 4 uploaded
+        actual: ...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest sequence that shows the problem.
+      placeholder: |
+        1. hush init
+        2. hush push -e dev
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: hush version
+      description: Output of `hush --version`.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and Node version
+      placeholder: Windows 11, Node 22.11.0
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional, redacted)
+      description: The error block or `hush doctor` output with paths and usernames removed.
+  - type: dropdown
+    id: doctor
+    attributes:
+      label: Does `hush doctor` report anything wrong?
+      options:
+        - No, everything passes
+        - Yes, see logs above
+        - I did not run it
+    validations:
+      required: true

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://hush.hanx.pro/docs
+    about: Commands, flags, exit codes and the API contract.
+  - name: Security policy
+    url: https://github.com/h4nxxlmao/hush/security/policy
+    about: Please report vulnerabilities privately, never in a public issue.
+  - name: Website
+    url: https://hush.hanx.pro
+    about: The service, the dashboard and the security model.

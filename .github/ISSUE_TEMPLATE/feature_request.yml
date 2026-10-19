@@ -1,0 +1,39 @@
+name: Feature request
+description: Propose a command, flag or workflow you are missing.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do today, and where does it hurt?
+      placeholder: I keep two .env files per environment and want to push both in one command.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The interface you would like, even if the implementation is unclear.
+      placeholder: |
+        hush push -e prod --file .env --file .env.local
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you tried, or other tools that do this well.
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Area
+      options:
+        - CLI command or flag
+        - Cryptography or key handling
+        - API contract
+        - Documentation
+        - Something else
+    validations:
+      required: true

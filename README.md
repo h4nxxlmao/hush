@@ -1,5 +1,10 @@
 # hush
 
+[![CI](https://github.com/h4nxxlmao/hush/actions/workflows/ci.yml/badge.svg)](https://github.com/h4nxxlmao/hush/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@xnah/hush.svg)](https://www.npmjs.com/package/@xnah/hush)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](./package.json)
+
 **Your .env, everywhere. Encrypted before it leaves your machine.**
 
 `hush` is a zero-knowledge `.env` sync CLI. Push and pull `.env` files across machines and teammates, everything is encrypted on your machine, so the server only ever stores ciphertext. Diff versions, check for missing variables, inject variables into a command without writing a file, and roll back.
@@ -88,6 +93,12 @@ node dist/index.js --help
 ```
 
 The published artifact bundles `@hush/schemas`, `@hush/crypto` and libsodium, so the only runtime dependencies are small helpers (`citty`, `@clack/prompts`, `picocolors`, `dotenv`, `open`) plus `@napi-rs/keyring` for the native keychain.
+
+## Contributing
+
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) first: it covers the local setup, the test suites, the rules for crypto changes and how releases are cut. Bug reports have a template that asks for the version, OS and a redacted log.
+
+If you find a vulnerability, please use the [security policy](https://github.com/h4nxxlmao/hush/security/policy) instead of a public issue.
 
 ## Security
 
