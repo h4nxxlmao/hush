@@ -55,29 +55,27 @@ project key (32 random bytes, generated on `hush init`)
 
 ## 5. Authentication and access control
 
-* Web: Auth.js (NextAuth v5) with GitHub OAuth. JWT session cookie, `HttpOnly`, `Secure`, `SameSite=Lax`, `Domain=hush.hanx.pro` in production so the dashboard on `hush.hanx.pro` and the API on `api.hush.hanx.pro` share it.
+* Web: GitHub OAuth. The session is an opaque random token, stored server side as a SHA-256 hash, sent in a `HttpOnly`, `Secure`, `SameSite=Lax` cookie scoped to the site domain so the dashboard and the API share one sign-in.
 * CLI: RFC 8628 device flow. Tokens are `hush_…`, stored as SHA-256, shown once, revocable, with `lastUsedAt` tracking. Constant-time comparisons are used where values are compared.
 * Every API route re-checks membership and role against the database. Projects you cannot access return **404**, not 403, so project existence never leaks.
 * Browser mutations must carry `X-Hush-Client: web` **and** come from an allowlisted `Origin` (CORS + CSRF defense in depth). Bearer-token clients are exempt.
-* Rate limits: 10 device attempts/min/IP, 60 API calls/min/token, 20 pushes/min/project, 120 browser mutations/min/IP. Production uses Upstash Redis; the in-memory fallback is development-only and says so.
+* Rate limits: 10 device attempts/min/IP, 60 API calls/min/token, 20 pushes/min/project, 120 browser mutations/min/IP, enforced with the Cloudflare Workers rate limiting binding.
 * Limits: 1 MB ciphertext per version, 10 environments per project, 5 projects per user, 5 memberships per user (free tier), 50 versions kept per environment.
 
 ## 6. Server-side hygiene
 
 * The backend never imports the crypto package (enforced by ESLint) and has no code path that could decrypt anything.
 * Request bodies are never logged. Structured JSON logs contain method, path, status, duration and ids, no headers, tokens, ciphertext or secrets.
-* Ciphertext lives in Postgres (Neon) over the serverless driver; devices, rate limits and temporary state live in Postgres/Redis because serverless instances hold nothing between requests.
+* Ciphertext, device codes, invites and sessions live in Cloudflare D1 (SQLite). The Worker holds no state between requests; a daily cron job and opportunistic cleanup remove expired rows and trim old versions.
 * Security headers on both apps: CSP with a per-request nonce (no `unsafe-inline` for scripts), `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Permissions-Policy`.
-* Preview deployments read CORS/cookie settings from the environment so no code changes are needed.
+* Deployments read CORS and cookie settings from the environment, so the same build works in development and production.
 
 ## 7. Verify it yourself
 
 ```bash
-pnpm --filter @hush/crypto test     # known-answer, tamper, AAD-mismatch, wrong-key tests
-pnpm --filter backend test           # includes a test that dumps every table and asserts
-                                     # the plaintext secret value/name appears nowhere
-pnpm --filter @xnah/hush test             # parser and diff edge cases
-pnpm --filter @xnah/hush test:e2e         # the real CLI against a live backend
+pnpm --filter "./shared/*" test     # known-answer, tamper, AAD-mismatch and wrong-key tests
+pnpm test                           # parser and diff edge cases
+pnpm test:e2e                       # the built CLI against a live backend
 ```
 
-The backend test suite is the strongest evidence for the core claim: it pushes a file containing a known secret, then serialises **every row of every table** and asserts the plaintext value and the variable name do not occur anywhere.
+The service test suite is the strongest evidence for the core claim: it pushes a file containing a known secret, then serialises **every row of every table** and asserts the plaintext value and the variable name do not occur anywhere.

@@ -12,7 +12,6 @@
 > **Beta. Don't store credentials you can't rotate.**
 
 - Website and dashboard: [hush.hanx.pro](https://hush.hanx.pro)
-- API: `https://api.hush.hanx.pro`
 - Package: `@xnah/hush` (binary `hush`)
 
 ```bash
