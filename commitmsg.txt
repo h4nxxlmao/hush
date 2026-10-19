@@ -1,0 +1,1 @@
+﻿fix(ci): let pnpm/action-setup read the version from packageManager
