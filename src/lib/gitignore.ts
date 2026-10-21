@@ -1,8 +1,9 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { writeFileNoFollow } from "./safe-write";
 
-/** The three lines every hush project wants ignored. */
-export const GITIGNORE_ENTRIES = [".env", ".env.*", "!.env.example"];
+/** Lines every hush project wants ignored; the export default is included too. */
+export const GITIGNORE_ENTRIES = [".env", ".env.*", "!.env.example", "hush-key.json"];
 
 export interface GitignoreResult {
   path: string;
@@ -30,7 +31,7 @@ export function ensureGitignoreEntries(
 
   if (added.length > 0) {
     const block = `${existing && !existing.endsWith("\n") ? "\n" : ""}${existing ? "\n" : ""}# hush.hanx.pro, never commit real secrets\n${added.join("\n")}\n`;
-    writeFileSync(path, existing + block, "utf8");
+    writeFileNoFollow(path, existing + block, 0o644);
   }
 
   return { path, added, alreadyCovered };

@@ -129,7 +129,7 @@ describe("gitignore helper", () => {
   it("adds the entries once and reports coverage", () => {
     const dir = mkdtempSync(join(tmpdir(), "hush-gitignore-"));
     const first = ensureGitignoreEntries(dir);
-    expect(first.added).toEqual([".env", ".env.*", "!.env.example"]);
+    expect(first.added).toEqual([".env", ".env.*", "!.env.example", "hush-key.json"]);
     const second = ensureGitignoreEntries(dir);
     expect(second.added).toEqual([]);
     expect(checkGitignore(dir).covered).toBe(true);
@@ -138,7 +138,7 @@ describe("gitignore helper", () => {
     // An existing .gitignore is preserved.
     writeFileSync(join(dir, ".gitignore"), "node_modules\n", "utf8");
     const third = ensureGitignoreEntries(dir);
-    expect(third.added).toEqual([".env", ".env.*", "!.env.example"]);
+    expect(third.added).toEqual([".env", ".env.*", "!.env.example", "hush-key.json"]);
     expect(readFileSync(join(dir, ".gitignore"), "utf8")).toContain("node_modules");
   });
 });

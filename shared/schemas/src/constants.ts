@@ -12,9 +12,10 @@ export const PRODUCT = {
   apiUrl: "https://api.hush.hanx.pro",
   docsPath: "/docs",
   securityPath: "/security",
+  changesPath: "/changes",
   builtByUrl: "https://hanx.pro",
-  // Placeholder until the public repo exists. Flagged in MORNING_REPORT.md.
   githubUrl: "https://github.com/h4nxxlmao/hush",
+  releasesUrl: "https://github.com/h4nxxlmao/hush/releases",
   cliPackage: "@xnah/hush",
   installCommand: "npm i -g @xnah/hush",
   betaNote: "Beta. Don't store credentials you can't rotate.",
@@ -112,7 +113,8 @@ export const RATE_LIMITS = {
   DEVICE_ATTEMPTS_PER_MINUTE_PER_IP: 10,
   API_CALLS_PER_MINUTE_PER_TOKEN: 60,
   PUSHES_PER_MINUTE_PER_PROJECT: 20,
-  WEB_MUTATIONS_PER_MINUTE_PER_IP: 120,
+  /** Browser reads and mutations, keyed per signed-in account. */
+  WEB_REQUESTS_PER_MINUTE_PER_ACCOUNT: 120,
 } as const;
 
 export const AUDIT_ACTIONS = [

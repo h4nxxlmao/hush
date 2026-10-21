@@ -1,5 +1,6 @@
 import { AsyncEntry } from "@napi-rs/keyring";
-import { chmodSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { writeFileNoFollow } from "./safe-write";
 import { ensureStateDir, removeFile, statePath } from "./state";
 
 /**
@@ -35,12 +36,7 @@ function filePath(account: string): string {
 function writeFileSecret(account: string, value: string): void {
   ensureStateDir();
   const path = filePath(account);
-  writeFileSync(path, value, { encoding: "utf8", mode: 0o600 });
-  try {
-    chmodSync(path, 0o600);
-  } catch {
-    // Windows ACLs do not map to POSIX modes; best effort only.
-  }
+  writeFileNoFollow(path, value, 0o600);
   if (!fileWarningPrinted) {
     fileWarningPrinted = true;
     console.error(

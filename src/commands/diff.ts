@@ -88,7 +88,10 @@ export const diffCommand = defineCommand({
         );
       }
 
-      const remoteContent = await decryptVersion(detail.project.id, target, projectKey);
+      const remoteContent = await decryptVersion(detail.project.id, target, projectKey, {
+        environmentName: environment.name,
+        version: target.version.version,
+      });
       const remoteParsed = parseEnvContent(remoteContent);
       const diff = diffEnvs(localParsed, remoteParsed);
       const summary = formatChangeSummary(diff);

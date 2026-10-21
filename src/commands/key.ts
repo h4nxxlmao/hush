@@ -1,7 +1,8 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { isCancel } from "@clack/prompts";
 import {
+  derivePublicKey,
   openPrivateKeyWithPassphrase,
   openPrivateKeyWithRecovery,
   toBase64,
@@ -11,8 +12,9 @@ import { defineCommand } from "citty";
 import { globalArgs, requireClient, requireInteractive, runWithArgs } from "../lib/command";
 import { CliError } from "../lib/errors";
 import { askPassphrase, cachePrivateKey } from "../lib/session";
-import { readIdentity } from "../lib/state";
-import { info, isJsonMode, printJson, success, warn } from "../lib/ui";
+import { writeFileNoFollow } from "../lib/safe-write";
+import { readIdentity, statePath } from "../lib/state";
+import { info, isJsonMode, printJson, success } from "../lib/ui";
 
 /**
  * `hush key export/import`, move the key to another machine.
@@ -39,7 +41,11 @@ const keyExportCommand = defineCommand({
   meta: { name: "export", description: "Write your sealed key to a portable file" },
   args: {
     ...globalArgs,
-    out: { type: "string", alias: "o", description: "Output file", default: "hush-key.json" },
+    out: {
+      type: "string",
+      alias: "o",
+      description: "Output file (default: ~/.config/hush/hush-key.json)",
+    },
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
@@ -61,8 +67,10 @@ const keyExportCommand = defineCommand({
         recoveryKeyHash: keys.recoveryKeyHash,
         apiUrl: client.baseUrl,
       };
-      const path = resolve(process.cwd(), String(args.out));
-      writeFileSync(path, `${JSON.stringify(payload, null, 2)}\n`, { encoding: "utf8", mode: 0o600 });
+      const path = args.out
+        ? resolve(process.cwd(), String(args.out))
+        : statePath("hush-key.json");
+      writeFileNoFollow(path, `${JSON.stringify(payload, null, 2)}\n`, 0o600);
       if (isJsonMode()) {
         printJson({ exported: true, file: path, publicKey: keys.publicKey });
         return;
@@ -77,7 +85,11 @@ const keyImportCommand = defineCommand({
   meta: { name: "import", description: "Load your sealed key from a file and unlock it here" },
   args: {
     ...globalArgs,
-    file: { type: "string", alias: "f", description: "Exported key file", default: "hush-key.json" },
+    file: {
+      type: "string",
+      alias: "f",
+      description: "Exported key file (default: ~/.config/hush/hush-key.json)",
+    },
     recovery: {
       type: "boolean",
       description: "Unseal with the recovery key instead of the passphrase",
@@ -86,7 +98,9 @@ const keyImportCommand = defineCommand({
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
-      const path = resolve(process.cwd(), String(args.file));
+      const path = args.file
+        ? resolve(process.cwd(), String(args.file))
+        : statePath("hush-key.json");
       let payload: KeyExportFile;
       try {
         payload = JSON.parse(readFileSync(path, "utf8")) as KeyExportFile;
@@ -96,11 +110,20 @@ const keyImportCommand = defineCommand({
       if (payload.version !== 1 || !payload.encryptedPrivateKey || !payload.publicKey) {
         throw CliError.usage("That file is not an hush key export.");
       }
+      if (!payload.kdfSalt || !payload.kdfParams) {
+        throw CliError.usage(
+          "That key export is missing its KDF parameters.",
+          "Use `hush key export` from a current CLI.",
+        );
+      }
       requireInteractive("unlock a key interactively");
 
       const identity = readIdentity();
       if (identity && payload.userId && identity.userId !== payload.userId) {
-        warn("This key belongs to a different account. It will be cached, but pushes would fail.");
+        throw CliError.auth(
+          "This key belongs to a different account.",
+          "Log out first, or import it on the account that owns it.",
+        );
       }
 
       let privateKey: Uint8Array;
@@ -125,6 +148,14 @@ const keyImportCommand = defineCommand({
           throw new CliError("Cancelled.");
         }
         throw CliError.auth("Could not unseal that key.", "Check the passphrase and try again.");
+      }
+
+      const derived = await derivePublicKey(privateKey);
+      if (derived !== payload.publicKey) {
+        throw CliError.auth(
+          "The imported private key does not match its public key.",
+          "Refusing to cache a key that would wrap new projects to the wrong key.",
+        );
       }
 
       await cachePrivateKey({

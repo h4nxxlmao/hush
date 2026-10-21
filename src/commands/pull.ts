@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
 import { confirm, isCancel } from "@clack/prompts";
 import { defineCommand } from "citty";
@@ -20,6 +20,7 @@ import {
   resolveSlug,
 } from "../lib/project-ops";
 import { loadIdentity, requirePrivateKey } from "../lib/session";
+import { writeFileNoFollow } from "../lib/safe-write";
 import {
   bytes,
   info,
@@ -79,7 +80,9 @@ export const pullCommand = defineCommand({
         );
       }
 
-      const remoteContent = await decryptVersion(detail.project.id, latest, projectKey);
+      const remoteContent = await decryptVersion(detail.project.id, latest, projectKey, {
+        environmentName: environment.name,
+      });
       const remoteParsed = parseEnvContent(remoteContent);
       const outPath = resolve(process.cwd(), (args.out as string | undefined) ?? ".env");
 
@@ -126,7 +129,7 @@ export const pullCommand = defineCommand({
         }
       }
 
-      writeFileSync(outPath, remoteContent, { encoding: "utf8", mode: 0o600 });
+      writeFileNoFollow(outPath, remoteContent, 0o600);
       if (isJsonMode()) {
         printJson({
           pulled: true,

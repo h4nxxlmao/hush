@@ -83,7 +83,9 @@ export const checkCommand = defineCommand({
           const { privateKey, publicKey } = await requirePrivateKey(client, { prompt: true });
           const { projectKey } = await openProjectKey(detail, privateKey, publicKey);
           const remote = parseEnvContent(
-            await decryptVersion(detail.project.id, latest, projectKey),
+            await decryptVersion(detail.project.id, latest, projectKey, {
+              environmentName: environment.name,
+            }),
           );
           for (const key of remote.vars.keys()) {
             if (!local.vars.has(key)) {

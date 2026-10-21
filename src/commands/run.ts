@@ -13,7 +13,34 @@ import {
   resolveSlug,
 } from "../lib/project-ops";
 import { loadIdentity, requirePrivateKey } from "../lib/session";
-import { cyan, info, isJsonMode } from "../lib/ui";
+import { cyan, info, isJsonMode, warn } from "../lib/ui";
+
+/**
+ * Variables that change how the child is loaded, interpreted or resolved.
+ * A remote env is data, not authority over the local process.
+ */
+const EXECUTION_ENV = new Set([
+  "PATH",
+  "PATHEXT",
+  "NODE_OPTIONS",
+  "NODE_PATH",
+  "LD_PRELOAD",
+  "LD_AUDIT",
+  "LD_LIBRARY_PATH",
+  "DYLD_INSERT_LIBRARIES",
+  "DYLD_LIBRARY_PATH",
+  "BASH_ENV",
+  "ENV",
+  "PYTHONSTARTUP",
+  "PYTHONPATH",
+  "PERL5OPT",
+  "GIT_SSH_COMMAND",
+  "SHELLOPTS",
+  "PS4",
+  "PROMPT_COMMAND",
+  "IFS",
+  "CDPATH",
+]);
 
 /**
  * `hush run -e dev -- <command>`, inject variables into a process without
@@ -65,7 +92,9 @@ export const runCommand = defineCommand({
 
       const { privateKey, publicKey } = await requirePrivateKey(client, { prompt: true });
       const { projectKey } = await openProjectKey(detail, privateKey, publicKey);
-      const content = await decryptVersion(detail.project.id, latest, projectKey);
+      const content = await decryptVersion(detail.project.id, latest, projectKey, {
+        environmentName: environment.name,
+      });
       const parsed = parseEnvContent(content);
 
       const childEnv: Record<string, string> = {};
@@ -74,8 +103,24 @@ export const runCommand = defineCommand({
           childEnv[key] = value;
         }
       }
+      // Never hand the child the CLI's own credentials.
+      for (const key of Object.keys(childEnv)) {
+        if (key.startsWith("HUSH_")) {
+          delete childEnv[key];
+        }
+      }
+      const blocked: string[] = [];
       for (const [key, value] of parsed.vars) {
+        if (EXECUTION_ENV.has(key.toUpperCase())) {
+          blocked.push(key);
+          continue;
+        }
         childEnv[key] = value;
+      }
+      if (blocked.length > 0) {
+        warn(
+          `Ignored execution-affecting variables from the remote env: ${blocked.join(", ")}.`,
+        );
       }
 
       if (!isJsonMode()) {

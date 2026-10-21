@@ -155,7 +155,14 @@ export const meKeysSchema = z.object({
 });
 export type MeKeys = z.infer<typeof meKeysSchema>;
 
-export const meKeysUploadSchema = meKeysSchema.omit({ updatedAt: true });
+export const meKeysUploadSchema = meKeysSchema.omit({ updatedAt: true }).extend({
+  // The sealed private key is a few dozen bytes; these bounds stop a single
+  // request from persisting megabyte-scale blobs in the users row.
+  encryptedPrivateKey: base64.max(4_096),
+  encryptedPrivateKeyRecovery: base64.max(4_096),
+  kdfSalt: base64.max(128),
+  recoveryKeyHash: hex.max(128),
+});
 export type MeKeysUpload = z.infer<typeof meKeysUploadSchema>;
 
 export const meKeysResponseSchema = z.object({

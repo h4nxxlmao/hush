@@ -59,15 +59,21 @@ project key (32 random bytes, generated on `hush init`)
 * CLI: RFC 8628 device flow. Tokens are `hush_…`, stored as SHA-256, shown once, revocable, with `lastUsedAt` tracking. Constant-time comparisons are used where values are compared.
 * Every API route re-checks membership and role against the database. Projects you cannot access return **404**, not 403, so project existence never leaks.
 * Browser mutations must carry `X-Hush-Client: web` **and** come from an allowlisted `Origin` (CORS + CSRF defense in depth). Bearer-token clients are exempt.
-* Rate limits: 10 device attempts/min/IP, 60 API calls/min/token, 20 pushes/min/project, 120 browser mutations/min/IP, enforced with the Cloudflare Workers rate limiting binding.
-* Limits: 1 MB ciphertext per version, 10 environments per project, 5 projects per user, 5 memberships per user (free tier), 50 versions kept per environment.
+* Mutating request bodies must be `application/json`; anything else is rejected before parsing, so a cross-origin form post cannot smuggle a body past the CSRF check.
+* The OAuth state is compared in constant time, and post-sign-in `?next=` redirects accept only same-site paths (no backslashes, control characters or protocol-relative URLs).
+* Device-code lookups validate the `ABCD-EFGH` format and share the login limiter, so an authenticated session cannot enumerate codes.
+* Rate limits: 10 device attempts/min/IP, 60 API calls/min/token, 20 pushes/min/project, 120 browser requests/min/account (reads and mutations), enforced with the Cloudflare Workers rate limiting bindings. The in-memory fallback is bounded to 10,000 keys and evicts the oldest.
+* Deployment configuration fails closed: `DEV_LOGIN`/`DEV_BOOTSTRAP` are rejected unless `WEB_ORIGIN` is localhost, and a non-local deployment requires a `SESSION_SECRET` of at least 32 characters. `Secure` cookies are derived from an `https://` origin, not from whether a cookie domain was set.
+* The account public key is immutable through `PUT /api/me/keys`: a passphrase or recovery-key change re-seals the same private key and cannot silently redirect future project-key wraps to a new key.
+* Audit-log IP addresses are returned only to project admins/owners; device approval shows a masked IP.
+* Limits: 1 MB ciphertext per version, 10 environments per project, 5 projects per user, 5 memberships per user (free tier), 50 versions kept per environment, trimmed for every environment.
 
 ## 6. Server-side hygiene
 
 * The backend never imports the crypto package (enforced by ESLint) and has no code path that could decrypt anything.
 * Request bodies are never logged. Structured JSON logs contain method, path, status, duration and ids, no headers, tokens, ciphertext or secrets.
 * Ciphertext, device codes, invites and sessions live in Cloudflare D1 (SQLite). The Worker holds no state between requests; a daily cron job and opportunistic cleanup remove expired rows and trim old versions.
-* Security headers on both apps: CSP with a per-request nonce (no `unsafe-inline` for scripts), `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Permissions-Policy`.
+* Security headers on both apps: CSP with a per-request nonce on the request and the response (so Next can stamp its own scripts), `'wasm-unsafe-eval'` for the libsodium WebAssembly build, `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, `X-DNS-Prefetch-Control`, `Permissions-Policy`. The only third-party origin the site's CSP allows is `avatars.githubusercontent.com`, for GitHub profile images.
 * Deployments read CORS and cookie settings from the environment, so the same build works in development and production.
 
 ## 7. Verify it yourself

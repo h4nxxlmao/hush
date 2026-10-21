@@ -6,11 +6,12 @@ import {
   readFileSync,
   renameSync,
   rmSync,
-  writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { PRODUCT } from "@hush/schemas";
+import { CliError } from "./errors";
+import { writeFileNoFollow } from "./safe-write";
 
 /**
  * Local state: where the token, the key cache and the project link live.
@@ -105,9 +106,7 @@ export function readJsonFile<T>(path: string): T | null {
 /** Writes atomically, with 0600 permissions where the platform supports them. */
 export function writeJsonFile(path: string, value: unknown, mode = 0o600): void {
   mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
-  const tmp = `${path}.${process.pid}.tmp`;
-  writeFileSync(tmp, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", mode });
-  renameSync(tmp, path);
+  writeFileNoFollow(path, `${JSON.stringify(value, null, 2)}\n`, mode);
 }
 
 export function removeFile(path: string): void {
@@ -117,7 +116,27 @@ export function removeFile(path: string): void {
 export function apiUrl(override?: string): string {
   const value =
     override?.trim() || process.env.HUSH_API_URL?.trim() || PRODUCT.apiUrl;
-  return value.replace(/\/+$/, "");
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw CliError.usage(`Invalid API URL "${value}".`, "Expected an https:// URL.");
+  }
+  const local =
+    url.hostname === "localhost" ||
+    url.hostname === "127.0.0.1" ||
+    url.hostname === "::1" ||
+    url.hostname === "[::1]";
+  if (url.protocol !== "https:" && !local) {
+    throw CliError.usage(
+      `Refusing to send credentials to "${value}".`,
+      "Use https://, or http://localhost for a local backend.",
+    );
+  }
+  if (url.username || url.password) {
+    throw CliError.usage("API URLs must not contain embedded credentials.");
+  }
+  return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
 }
 
 export interface ProjectLink {

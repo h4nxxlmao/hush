@@ -106,7 +106,10 @@ export const pushCommand = defineCommand({
       let summary = "";
       if (base) {
         try {
-          const remoteContent = await decryptVersion(detail.project.id, base, projectKey);
+          const remoteContent = await decryptVersion(detail.project.id, base, projectKey, {
+            environmentName: environment.name,
+            version: base.version.version,
+          });
           summary = formatChangeSummary(diffEnvs(parseEnvContent(remoteContent), localParsed));
         } catch {
           summary = "";

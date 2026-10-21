@@ -121,11 +121,35 @@ export async function fetchLatestOrNull(
 }
 
 /** Decrypt a fetched version. The AAD binds project/env/version/keyVersion. */
+export interface ExpectedVersionSlot {
+  environmentName?: string;
+  version?: number;
+}
+
 export async function decryptVersion(
   projectId: string,
   response: LatestVersionResponse,
   projectKey: Uint8Array,
+  expected: ExpectedVersionSlot = {},
 ): Promise<string> {
+  // The AAD must describe the slot the user asked for, not merely the slot the
+  // server says the blob belongs to. Otherwise a hostile server can serve
+  // another environment's correctly labelled ciphertext while the CLI reports
+  // the requested environment.
+  if (expected.environmentName && response.environment.name !== expected.environmentName) {
+    throw new CliError(
+      `The server returned "${response.environment.name}", not "${expected.environmentName}".`,
+      3,
+      "Refusing to decrypt ciphertext for the wrong environment.",
+    );
+  }
+  if (expected.version !== undefined && response.version.version !== expected.version) {
+    throw new CliError(
+      `The server returned v${response.version.version}, not v${expected.version}.`,
+      3,
+      "Refusing to decrypt ciphertext for the wrong version.",
+    );
+  }
   const bytes = await openEnvFile(
     response.version.ciphertext,
     response.version.nonce,
