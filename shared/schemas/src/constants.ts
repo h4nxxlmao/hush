@@ -124,6 +124,7 @@ export const AUDIT_ACTIONS = [
   "invite",
   "invite_accepted",
   "revoke",
+  "member_left",
   "rekey",
   "login",
   "token_revoked",
@@ -182,6 +183,7 @@ export const api = {
     members: (slug: string) => `/api/projects/${encodeURIComponent(slug)}/members`,
     member: (slug: string, userId: string) =>
       `/api/projects/${encodeURIComponent(slug)}/members/${encodeURIComponent(userId)}`,
+    leave: (slug: string) => `/api/projects/${encodeURIComponent(slug)}/leave`,
     audit: (slug: string) => `/api/projects/${encodeURIComponent(slug)}/audit`,
   },
 } as const;

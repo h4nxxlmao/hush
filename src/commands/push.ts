@@ -57,6 +57,11 @@ export const pushCommand = defineCommand({
       description: "If someone else pushed first, pull their state and push anyway",
       default: false,
     },
+    dryRun: {
+      type: "boolean",
+      description: "Show what would be pushed without uploading",
+      default: false,
+    },
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
@@ -114,6 +119,30 @@ export const pushCommand = defineCommand({
         } catch {
           summary = "";
         }
+      }
+
+      if (args.dryRun) {
+        const nextVersion = base ? base.version.version + 1 : 1;
+        if (isJsonMode()) {
+          printJson({
+            pushed: false,
+            reason: "dry_run",
+            project: slug,
+            environment: environment.name,
+            baseVersion: base?.version.version ?? 0,
+            nextVersion,
+            summary,
+            variables: localParsed.vars.size,
+          });
+          return;
+        }
+        success(
+          `Dry run: would push v${nextVersion} to ${cyan(environment.name)}${summary && summary !== "No changes." ? ` (${summary})` : ""}.`,
+        );
+        info(
+          `${localParsed.vars.size} variables · nothing was encrypted or uploaded. Remove --dry-run to push.`,
+        );
+        return;
       }
 
       let attempts = 0;

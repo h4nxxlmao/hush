@@ -56,12 +56,29 @@ function extractCommand(positional: string | undefined, rawArgs: string[]): stri
   return positional ? [positional] : [];
 }
 
+/** "A,B" -> Set("A", "B"), ignoring empty segments. */
+function parseKeyList(value: string | undefined): Set<string> {
+  return new Set(
+    (value ?? "")
+      .split(",")
+      .map((key) => key.trim())
+      .filter(Boolean),
+  );
+}
+
 export const runCommand = defineCommand({
   meta: { name: "run", description: "Run a command with the environment injected (no file written)" },
   args: {
     ...globalArgs,
     env: { type: "string", alias: "e", description: "Environment name" },
     project: { type: "string", description: "Project slug (defaults to the linked project)" },
+    only: { type: "string", description: "Comma-separated keys to inject (default: all)" },
+    except: { type: "string", description: "Comma-separated keys to omit" },
+    noInherit: {
+      type: "boolean",
+      description: "Do not inherit the parent environment",
+      default: false,
+    },
     cmd: { type: "positional", description: "Command (use: -- <command> …)", required: false },
   },
   run: async ({ args, rawArgs }) => {
@@ -98,9 +115,11 @@ export const runCommand = defineCommand({
       const parsed = parseEnvContent(content);
 
       const childEnv: Record<string, string> = {};
-      for (const [key, value] of Object.entries(process.env)) {
-        if (value !== undefined) {
-          childEnv[key] = value;
+      if (!args.noInherit) {
+        for (const [key, value] of Object.entries(process.env)) {
+          if (value !== undefined) {
+            childEnv[key] = value;
+          }
         }
       }
       // Never hand the child the CLI's own credentials.
@@ -109,8 +128,19 @@ export const runCommand = defineCommand({
           delete childEnv[key];
         }
       }
+      const only = parseKeyList(args.only as string | undefined);
+      const except = parseKeyList(args.except as string | undefined);
+      if (only.size > 0 && except.size > 0) {
+        throw CliError.usage("Use --only or --except, not both.");
+      }
       const blocked: string[] = [];
       for (const [key, value] of parsed.vars) {
+        if (only.size > 0 && !only.has(key)) {
+          continue;
+        }
+        if (except.has(key)) {
+          continue;
+        }
         if (EXECUTION_ENV.has(key.toUpperCase())) {
           blocked.push(key);
           continue;
@@ -122,10 +152,13 @@ export const runCommand = defineCommand({
           `Ignored execution-affecting variables from the remote env: ${blocked.join(", ")}.`,
         );
       }
+      const injected = [...parsed.vars.keys()].filter(
+        (key) => (only.size === 0 || only.has(key)) && !except.has(key),
+      ).length;
 
       if (!isJsonMode()) {
         info(
-          `Running with ${parsed.vars.size} variables from ${cyan(`${slug}/${environment.name}`)} (v${latest.version.version}), nothing written to disk.`,
+          `Running with ${injected} variables from ${cyan(`${slug}/${environment.name}`)} (v${latest.version.version}), nothing written to disk.`,
         );
       }
 

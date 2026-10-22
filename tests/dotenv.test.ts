@@ -3,6 +3,7 @@ import {
   canonicalizeEnvContent,
   compareWithExample,
   diffEnvs,
+  exampleFromEnvContent,
   formatChangeSummary,
   maskValue,
   parseEnvContent,
@@ -80,6 +81,13 @@ describe("canonicalizeEnvContent", () => {
     expect(canonicalizeEnvContent("A=1\r\nB=2")).toBe("A=1\nB=2\n");
     expect(canonicalizeEnvContent("A=1\n\n\n")).toBe("A=1\n");
     expect(canonicalizeEnvContent("A=1\n")).toBe("A=1\n");
+  });
+});
+
+describe("exampleFromEnvContent", () => {
+  it("keeps keys in order and blanks every value", () => {
+    const source = '# comment\nFOO=secret\nBAR="multi\\nline"\nexport BAZ=3\n';
+    expect(exampleFromEnvContent(source)).toBe("FOO=\nBAR=\nBAZ=\n");
   });
 });
 

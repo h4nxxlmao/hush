@@ -46,6 +46,11 @@ export const diffCommand = defineCommand({
       description: "Show real values instead of ••••••••",
       default: false,
     },
+    exitCode: {
+      type: "boolean",
+      description: "Exit 1 when the local file and remote version differ",
+      default: false,
+    },
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
@@ -107,6 +112,9 @@ export const diffCommand = defineCommand({
           unchanged: diff.unchanged,
           inSync: summary === "No changes.",
         });
+        if (args.exitCode && summary !== "No changes.") {
+          process.exitCode = 1;
+        }
         return;
       }
 
@@ -128,6 +136,9 @@ export const diffCommand = defineCommand({
         ),
       );
       info(args.reveal ? "Values shown (--reveal)." : "Values masked. Add --reveal to see them.");
+      if (args.exitCode) {
+        process.exitCode = 1;
+      }
     });
   },
 });

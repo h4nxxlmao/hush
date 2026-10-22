@@ -77,7 +77,7 @@ async function bootstrap(username: string): Promise<string> {
 }
 
 beforeAll(async () => {
-  expect(existsSync(CLI), `build the CLI first: pnpm build (${CLI})`).toBe(true);
+  expect(existsSync(CLI), `build the CLI first: pnpm --filter @xnah/hush build (${CLI})`).toBe(true);
   stateDir = mkdtempSync(join(tmpdir(), "hush-e2e-state-"));
   workDir = mkdtempSync(join(tmpdir(), "hush-e2e-work-"));
 

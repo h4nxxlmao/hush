@@ -46,6 +46,15 @@ export function canonicalizeEnvContent(content: string): string {
   return normalized;
 }
 
+/** Blank every value while keeping the key order, for a safe .env.example. */
+export function exampleFromEnvContent(content: string): string {
+  const parsed = parseEnvContent(canonicalizeEnvContent(content));
+  if (parsed.entries.length === 0) {
+    return "";
+  }
+  return `${parsed.entries.map((entry) => `${entry.key}=`).join("\n")}\n`;
+}
+
 export interface EnvDiff {
   /** Keys in `to` that are absent from `from`. */
   added: string[];

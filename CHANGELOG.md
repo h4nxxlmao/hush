@@ -4,6 +4,32 @@ All notable changes to `@xnah/hush` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/).
 
+## [0.2.0] - 2026-10-22
+
+Quality-of-life pass plus the security hardening from the full source audit.
+
+### Added
+
+- `hush use [env]`: pin the default environment for the current folder in `.hush.json`, or list environments and mark the current one.
+- `hush example`: generate a `.env.example` from a real `.env` with every value blanked and key order preserved; `--force` overwrites and `-o` picks the output.
+- `hush leave`: leave a project as a non-owner, with a confirmation unless `-y`; the folder link is removed when it points at that project.
+- `hush push --dry-run`: show the next version and change summary without encrypting or uploading.
+- `hush diff --exit-code`: exit 1 when the local file and remote version differ, for CI.
+- `hush run --only A,B`, `--except A,B` and `--no-inherit`: inject exactly the variables a child process needs and optionally start from an empty environment.
+
+### Security
+
+- Secret writes are atomic, refuse symlinks, and enforce `0600`; `pull` tightens existing files.
+- `key export` defaults outside the repository and `key import` verifies that the imported key matches its public key.
+- `run` strips `HUSH_*` and execution-affecting variables such as `NODE_OPTIONS` from the child.
+- API URL overrides must be HTTPS or localhost; logout fails loudly instead of silently doing nothing.
+- The AEAD additionally binds the requested environment and version to the response, so a blob cannot be replayed into another environment.
+
+### Changed
+
+- The `.env.example` check now documents the real exit code (`1`), not `4`.
+- Shell completions and docs cover the new commands and flags.
+
 ## [0.1.0] - 2026-10-19
 
 First public beta. The CLI is feature complete against the hosted API.
