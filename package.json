@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "private": false,
   "description": "Zero-knowledge .env sync. Push and pull .env files across machines and teammates, encrypted before anything leaves your machine.",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "author": "h4nxxlmao",
   "type": "module",
   "packageManager": "pnpm@11.20.0",

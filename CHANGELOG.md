@@ -27,6 +27,7 @@ Quality-of-life pass plus the security hardening from the full source audit.
 
 ### Changed
 
+- Relicensed from MIT to GPL-3.0-only. Releases already published under MIT keep that license; this and future releases are GPLv3.
 - The `.env.example` check now documents the real exit code (`1`), not `4`.
 - Shell completions and docs cover the new commands and flags.
 

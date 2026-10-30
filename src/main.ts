@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import { defineCommand } from "citty";
 import { checkCommand } from "./commands/check";
 import { completionCommand } from "./commands/completion";

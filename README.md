@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/h4nxxlmao/hush/actions/workflows/ci.yml/badge.svg)](https://github.com/h4nxxlmao/hush/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@xnah/hush.svg)](https://www.npmjs.com/package/@xnah/hush)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![license](https://img.shields.io/badge/license-GPLv3-blue.svg)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](./package.json)
 
 **Your .env, everywhere. Encrypted before it leaves your machine.**
@@ -108,4 +108,6 @@ Please read [SECURITY.md](./SECURITY.md) before relying on this for anything sen
 
 ## License
 
-[MIT](./LICENSE)
+[GNU General Public License v3.0 only](./LICENSE)
+
+hush is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 3. It is distributed in the hope that it will be useful, but without any warranty, without even the implied warranty of merchantability or fitness for a particular purpose. See the license for the full terms.
