@@ -8,6 +8,7 @@ import {
   formatChangeSummary,
   parseEnvContent,
 } from "../lib/dotenv-file";
+import { assertEnvFileInsideCwd } from "../lib/env-path";
 import { CliError } from "../lib/errors";
 import {
   decryptVersion,
@@ -60,6 +61,7 @@ export const diffCommand = defineCommand({
       if (!existsSync(filePath)) {
         throw CliError.usage(`${args.file ?? ".env"} not found in this folder.`);
       }
+      assertEnvFileInsideCwd(filePath);
       const localParsed = parseEnvContent(canonicalizeEnvContent(readFileSync(filePath, "utf8")));
 
       const detail = await loadProjectDetail(client, slug);
@@ -68,19 +70,23 @@ export const diffCommand = defineCommand({
       const environment = pickEnvironment(detail, args.env as string | undefined);
 
       const requestedVersion = (args.version as string | undefined)?.trim();
-      const target = requestedVersion
-        ? await fetchVersion(client, slug, environment.name, Number(requestedVersion))
-        : await fetchLatestOrNull(client, slug, environment.name);
+      const versionNumber = requestedVersion ? Number(requestedVersion) : null;
+      if (
+        versionNumber !== null &&
+        (!Number.isInteger(versionNumber) || versionNumber < 1)
+      ) {
+        throw CliError.usage(`--version expects a positive integer, got "${requestedVersion}".`);
+      }
+      const target =
+        versionNumber !== null
+          ? await fetchVersion(client, slug, environment.name, versionNumber)
+          : await fetchLatestOrNull(client, slug, environment.name);
       if (!target) {
         throw new CliError(
           `No versions in "${environment.name}" yet.`,
           1,
           `Push one first: hush push -e ${environment.name}`,
         );
-      }
-
-      if (Number.isNaN(Number(requestedVersion)) && requestedVersion) {
-        throw CliError.usage(`--version expects a number, got "${requestedVersion}".`);
       }
 
       const { privateKey, publicKey } = await requirePrivateKey(client, { prompt: true });

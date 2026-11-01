@@ -56,7 +56,7 @@ The whole file is one blob, so **variable names are encrypted too**. Ciphertext 
 | `hush rollback -e <env> <version>` | Re-encrypt an old version's content as a new version (history keeps both) |
 | `hush invite <github-username> [--role member]` | Wrap the project key for the invitee and send the invite |
 | `hush members` | Members, roles and pending invites |
-| `hush revoke <github-username>` | Revoke and rotate: new project key, every environment re-encrypted, everyone else re-wrapped, all client-side |
+| `hush revoke <github-username>` | Owner-only: revoke and rotate. New project key, every environment with content re-encrypted, everyone else re-wrapped, all client-side |
 | `hush leave [-y]` | Leave a project you are a member of; the owner must transfer or delete instead |
 | `hush key export` / `key import` | Move your sealed key between machines (the export is ciphertext; useless without your passphrase) |
 | `hush lock` / `unlock` | Clear or restore the cached private key |

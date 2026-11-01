@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   copyFileSync,
   existsSync,
   mkdirSync,
@@ -28,7 +29,7 @@ import { writeFileNoFollow } from "./safe-write";
  */
 
 const LEGACY_DIR = ".config/envhx";
-const LEGACY_PROJECT_LINK_FILE = ".envhx.json";
+export const LEGACY_PROJECT_LINK_FILE = ".envhx.json";
 
 let stateDirResolved = false;
 
@@ -64,6 +65,13 @@ function migrateLegacyStateDir(): void {
           // Best effort: a locked file just stays behind.
         }
       }
+      try {
+        // A legacy install may have left these world-readable; the migrated
+        // copy must meet the same 0600 guarantee as a fresh write.
+        chmodSync(to, 0o600);
+      } catch {
+        // Windows ACLs do not map to POSIX modes.
+      }
     }
     if (readdirSync(legacy).length === 0) {
       rmSync(legacy, { recursive: true, force: true });
@@ -85,6 +93,12 @@ export function stateDir(): string {
 export function ensureStateDir(): string {
   const dir = stateDir();
   mkdirSync(dir, { recursive: true, mode: 0o700 });
+  try {
+    // mkdir's mode is ignored for an existing directory.
+    chmodSync(dir, 0o700);
+  } catch {
+    // Windows ACLs do not map to POSIX modes.
+  }
   return dir;
 }
 

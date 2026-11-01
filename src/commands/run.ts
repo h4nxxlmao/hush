@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { defineCommand } from "citty";
+import { buildChildEnv } from "../lib/child-env";
 import { globalArgs, requireClient, runWithArgs } from "../lib/command";
 import { parseEnvContent } from "../lib/dotenv-file";
 import { CliError } from "../lib/errors";
@@ -14,33 +15,6 @@ import {
 } from "../lib/project-ops";
 import { loadIdentity, requirePrivateKey } from "../lib/session";
 import { cyan, info, isJsonMode, warn } from "../lib/ui";
-
-/**
- * Variables that change how the child is loaded, interpreted or resolved.
- * A remote env is data, not authority over the local process.
- */
-const EXECUTION_ENV = new Set([
-  "PATH",
-  "PATHEXT",
-  "NODE_OPTIONS",
-  "NODE_PATH",
-  "LD_PRELOAD",
-  "LD_AUDIT",
-  "LD_LIBRARY_PATH",
-  "DYLD_INSERT_LIBRARIES",
-  "DYLD_LIBRARY_PATH",
-  "BASH_ENV",
-  "ENV",
-  "PYTHONSTARTUP",
-  "PYTHONPATH",
-  "PERL5OPT",
-  "GIT_SSH_COMMAND",
-  "SHELLOPTS",
-  "PS4",
-  "PROMPT_COMMAND",
-  "IFS",
-  "CDPATH",
-]);
 
 /**
  * `hush run -e dev -- <command>`, inject variables into a process without
@@ -114,47 +88,23 @@ export const runCommand = defineCommand({
       });
       const parsed = parseEnvContent(content);
 
-      const childEnv: Record<string, string> = {};
-      if (!args.noInherit) {
-        for (const [key, value] of Object.entries(process.env)) {
-          if (value !== undefined) {
-            childEnv[key] = value;
-          }
-        }
-      }
-      // Never hand the child the CLI's own credentials.
-      for (const key of Object.keys(childEnv)) {
-        if (key.startsWith("HUSH_")) {
-          delete childEnv[key];
-        }
-      }
       const only = parseKeyList(args.only as string | undefined);
       const except = parseKeyList(args.except as string | undefined);
       if (only.size > 0 && except.size > 0) {
         throw CliError.usage("Use --only or --except, not both.");
       }
-      const blocked: string[] = [];
-      for (const [key, value] of parsed.vars) {
-        if (only.size > 0 && !only.has(key)) {
-          continue;
-        }
-        if (except.has(key)) {
-          continue;
-        }
-        if (EXECUTION_ENV.has(key.toUpperCase())) {
-          blocked.push(key);
-          continue;
-        }
-        childEnv[key] = value;
-      }
+      const { env: childEnv, blocked, injected } = buildChildEnv({
+        parent: process.env,
+        remote: parsed.vars,
+        only,
+        except,
+        noInherit: Boolean(args.noInherit),
+      });
       if (blocked.length > 0) {
         warn(
           `Ignored execution-affecting variables from the remote env: ${blocked.join(", ")}.`,
         );
       }
-      const injected = [...parsed.vars.keys()].filter(
-        (key) => (only.size === 0 || only.has(key)) && !except.has(key),
-      ).length;
 
       if (!isJsonMode()) {
         info(

@@ -49,7 +49,7 @@ project key (32 random bytes, generated on `hush init`)
 
 * **A compromised server could serve malicious JavaScript.** The dashboard decrypts in the browser when you ask it to. That is opt-in and labelled as less secure than the CLI; the CLI is the recommended way to decrypt because no server-controlled code runs in the path between your key and your screen.
 * **Metadata is metadata.** The server sees project/environment names and sizes. Don't put secrets in project, environment, or version message fields, the UI and CLI warn about this.
-* **Revoked members keep what they already pulled.** Revoking rotates the project key and re-encrypts the latest version of every environment, so a revoked member cannot read anything pushed afterwards. Rotate the underlying secrets to genuinely cut them off.
+* **Revoked members keep what they already pulled.** Only the project owner can revoke a member. Revocation rotates the project key and re-encrypts the latest version of every environment with content, so a revoked member cannot read anything pushed afterwards. A member who leaves on their own does not trigger a rotation: they keep the key for everything already on their machine, and the owner must revoke them or rotate the key if that matters. Rotate the underlying secrets to genuinely cut them off.
 * **Losing both the passphrase and the recovery key means the data is unrecoverable.** By design. Nobody at hush.hanx.pro can help.
 * **Beta.** Don't store credentials you can't rotate.
 

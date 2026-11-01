@@ -14,8 +14,8 @@ import { basename, dirname, join } from "node:path";
 /**
  * Write a secret-bearing file without following links and without exposing a
  * partially written file. The temporary file is created exclusively in the
- * destination directory, then renamed over the target; a symlink at the target
- * is replaced rather than followed.
+ * destination directory, then renamed over the target; a symlink or any other
+ * non-regular target is refused.
  */
 export function writeFileNoFollow(path: string, content: string, mode = 0o600): void {
   try {
@@ -35,13 +35,39 @@ export function writeFileNoFollow(path: string, content: string, mode = 0o600): 
     writeFileSync(fd, content, "utf8");
     fsyncSync(fd);
   } catch (error) {
-    closeSync(fd);
-    unlinkSync(tmp);
+    try {
+      closeSync(fd);
+    } catch {
+      // The original error is the useful one.
+    }
+    try {
+      unlinkSync(tmp);
+    } catch {
+      // Best effort: a failed cleanup must not mask the write error.
+    }
     throw error;
   }
-  closeSync(fd);
-  chmodSync(tmp, mode);
-  renameSync(tmp, path);
+  try {
+    closeSync(fd);
+  } catch (error) {
+    try {
+      unlinkSync(tmp);
+    } catch {
+      // Best effort.
+    }
+    throw error;
+  }
+  try {
+    chmodSync(tmp, mode);
+    renameSync(tmp, path);
+  } catch (error) {
+    try {
+      unlinkSync(tmp);
+    } catch {
+      // Best effort: never leave the secret-bearing temp behind if possible.
+    }
+    throw error;
+  }
   try {
     chmodSync(path, mode);
   } catch {

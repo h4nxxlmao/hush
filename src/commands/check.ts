@@ -7,6 +7,7 @@ import {
   compareWithExample,
   parseEnvContent,
 } from "../lib/dotenv-file";
+import { assertEnvFileInsideCwd } from "../lib/env-path";
 import { CliError } from "../lib/errors";
 import {
   decryptVersion,
@@ -51,6 +52,7 @@ export const checkCommand = defineCommand({
       if (!existsSync(filePath)) {
         throw new CliError(`${args.file ?? ".env"} not found.`, 2, "Run `hush pull` to get it.");
       }
+      assertEnvFileInsideCwd(filePath);
       const local = parseEnvContent(canonicalizeEnvContent(readFileSync(filePath, "utf8")));
 
       const missing: string[] = [];
@@ -60,6 +62,7 @@ export const checkCommand = defineCommand({
       const examplePath = resolve(process.cwd(), String(args.example ?? ".env.example"));
       if (existsSync(examplePath)) {
         compared.push(String(args.example ?? ".env.example"));
+        assertEnvFileInsideCwd(examplePath);
         const example = parseEnvContent(canonicalizeEnvContent(readFileSync(examplePath, "utf8")));
         const result = compareWithExample(example, local);
         missing.push(...result.missing);

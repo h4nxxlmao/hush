@@ -387,7 +387,7 @@ export type RekeyMemberEntry = z.infer<typeof rekeyMemberEntrySchema>;
 export const rekeyRequestSchema = z.object({
   revokedUserId: z.string().min(1),
   keyVersion: z.number().int().min(2),
-  environments: z.array(rekeyEnvironmentEntrySchema).min(1).max(LIMITS.MAX_ENVIRONMENTS_PER_PROJECT),
+  environments: z.array(rekeyEnvironmentEntrySchema).max(LIMITS.MAX_ENVIRONMENTS_PER_PROJECT),
   members: z.array(rekeyMemberEntrySchema).max(LIMITS.MAX_MEMBERS_PER_PROJECT),
 });
 export type RekeyRequest = z.infer<typeof rekeyRequestSchema>;

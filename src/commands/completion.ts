@@ -42,7 +42,7 @@ const COMMAND_FLAGS: Record<string, string[]> = {
   diff: ["-e", "--env", "--version", "--reveal", "--exit-code", "--project"],
   check: ["-e", "--env", "--example", "--remote", "--project"],
   run: ["-e", "--env", "--project", "--only", "--except", "--no-inherit"],
-  use: ["--project"],
+  use: ["--project", "--relink"],
   example: ["-o", "--out", "--force"],
   history: ["-e", "--env", "--limit", "--project"],
   rollback: ["-e", "--env", "-m", "--message", "--project"],

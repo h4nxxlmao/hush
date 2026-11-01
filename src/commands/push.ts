@@ -16,6 +16,7 @@ import {
   formatChangeSummary,
   parseEnvContent,
 } from "../lib/dotenv-file";
+import { assertEnvFileInsideCwd } from "../lib/env-path";
 import { CliError } from "../lib/errors";
 import { warnIfWorldReadable } from "../lib/file-perms";
 import {
@@ -75,6 +76,7 @@ export const pushCommand = defineCommand({
           "Pass a path: hush push .env.production -e prod",
         );
       }
+      assertEnvFileInsideCwd(filePath);
       const content = canonicalizeEnvContent(readFileSync(filePath, "utf8"));
       if (Buffer.byteLength(content, "utf8") > LIMITS.MAX_PLAINTEXT_BYTES) {
         throw CliError.usage("That file is larger than the 1 MB limit.");
@@ -87,13 +89,53 @@ export const pushCommand = defineCommand({
       requireRole(me, "member");
       const environment = pickEnvironment(detail, args.env as string | undefined);
 
-      const { privateKey, publicKey } = await requirePrivateKey(client, { prompt: true });
+      const { privateKey, publicKey } = await requirePrivateKey(client, {
+        prompt: true,
+        cache: !args.dryRun,
+      });
       const { projectKey, keyVersion } = await openProjectKey(detail, privateKey, publicKey);
 
       const localParsed = parseEnvContent(content);
       const localHash = await computeContentHash(utf8ToBytes(content), projectKey);
 
       let base = await fetchLatestOrNull(client, slug, environment.name);
+
+      if (args.dryRun) {
+        let summary = "No changes.";
+        if (base) {
+          try {
+            const remoteContent = await decryptVersion(detail.project.id, base, projectKey, {
+              environmentName: environment.name,
+              version: base.version.version,
+            });
+            summary = formatChangeSummary(diffEnvs(parseEnvContent(remoteContent), localParsed));
+          } catch {
+            summary = "";
+          }
+        }
+        const nextVersion = base ? base.version.version + 1 : 1;
+        if (isJsonMode()) {
+          printJson({
+            pushed: false,
+            reason: "dry_run",
+            project: slug,
+            environment: environment.name,
+            baseVersion: base?.version.version ?? 0,
+            nextVersion,
+            summary,
+            variables: localParsed.vars.size,
+          });
+          return;
+        }
+        success(
+          `Dry run: would push v${nextVersion} to ${cyan(`${slug}/${environment.name}`)}${summary && summary !== "No changes." ? ` (${summary})` : ""}.`,
+        );
+        info(
+          `${localParsed.vars.size} variables · nothing was encrypted or uploaded, and the key was not cached.`,
+        );
+        return;
+      }
+
       if (base && base.version.contentHash === localHash && !args.force) {
         if (isJsonMode()) {
           printJson({
@@ -119,30 +161,6 @@ export const pushCommand = defineCommand({
         } catch {
           summary = "";
         }
-      }
-
-      if (args.dryRun) {
-        const nextVersion = base ? base.version.version + 1 : 1;
-        if (isJsonMode()) {
-          printJson({
-            pushed: false,
-            reason: "dry_run",
-            project: slug,
-            environment: environment.name,
-            baseVersion: base?.version.version ?? 0,
-            nextVersion,
-            summary,
-            variables: localParsed.vars.size,
-          });
-          return;
-        }
-        success(
-          `Dry run: would push v${nextVersion} to ${cyan(environment.name)}${summary && summary !== "No changes." ? ` (${summary})` : ""}.`,
-        );
-        info(
-          `${localParsed.vars.size} variables · nothing was encrypted or uploaded. Remove --dry-run to push.`,
-        );
-        return;
       }
 
       let attempts = 0;
@@ -181,7 +199,7 @@ export const pushCommand = defineCommand({
             return;
           }
           console.log(
-            `${green("✔")} Pushed v${response.version.version} to ${cyan(environment.name)}${summary && summary !== "No changes." ? `  ${cyan(summary)}` : ""}`,
+            `${green("✔")} Pushed v${response.version.version} to ${cyan(`${slug}/${environment.name}`)}${summary && summary !== "No changes." ? `  ${cyan(summary)}` : ""}`,
           );
           info(`${localParsed.vars.size} variables · ${bytes(response.version.sizeBytes)} · sealed with the project key`);
           return;

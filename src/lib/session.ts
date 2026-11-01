@@ -115,7 +115,7 @@ export interface PrivateKeyHandle {
  */
 export async function requirePrivateKey(
   client: ApiClient,
-  options: { prompt?: boolean; recoveryKey?: string } = {},
+  options: { prompt?: boolean; recoveryKey?: string; cache?: boolean } = {},
 ): Promise<PrivateKeyHandle> {
   const cached = await loadCachedPrivateKey();
   if (cached) {
@@ -175,11 +175,13 @@ export async function requirePrivateKey(
   }
 
   const identity = readIdentity();
-  await cachePrivateKey({
-    userId: identity?.userId ?? "",
-    publicKey: keys.publicKey,
-    privateKey: toBase64(privateKey),
-  });
+  if (options.cache !== false) {
+    await cachePrivateKey({
+      userId: identity?.userId ?? "",
+      publicKey: keys.publicKey,
+      privateKey: toBase64(privateKey),
+    });
+  }
   return { privateKey, publicKey: keys.publicKey, userId: identity?.userId ?? "" };
 }
 

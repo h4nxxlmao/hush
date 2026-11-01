@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// SPDX-License-Identifier: GPL-3.0-only
 import { runMain } from "citty";
 import { reportError } from "./lib/command";
 import { mainCommand } from "./main";

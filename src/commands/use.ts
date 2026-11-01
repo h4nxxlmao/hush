@@ -16,6 +16,11 @@ export const useCommand = defineCommand({
     ...globalArgs,
     env: { type: "positional", description: "Environment name", required: false },
     project: { type: "string", description: "Project slug (defaults to the linked project)" },
+    relink: {
+      type: "boolean",
+      description: "Allow replacing a link that points at a different project",
+      default: false,
+    },
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
@@ -53,6 +58,14 @@ export const useCommand = defineCommand({
         );
       }
 
+      const existing = readProjectLink();
+      if (existing && existing.projectSlug !== detail.project.slug && !args.relink) {
+        throw CliError.usage(
+          `This folder is linked to ${existing.projectSlug}, not ${detail.project.slug}.`,
+          "Pass --relink if you really want to move this folder to another project.",
+        );
+      }
+
       writeProjectLink({
         projectId: detail.project.id,
         projectSlug: detail.project.slug,
@@ -62,10 +75,16 @@ export const useCommand = defineCommand({
         printJson({
           project: detail.project.slug,
           defaultEnv: environment.name,
+          relinked: Boolean(existing && existing.projectSlug !== detail.project.slug),
         });
         return;
       }
-      success(`Default environment for this folder: ${cyan(environment.name)}.`);
+      const relinked = Boolean(existing && existing.projectSlug !== detail.project.slug);
+      success(
+        relinked
+          ? `Relinked this folder from ${existing?.projectSlug} to ${cyan(detail.project.slug)}; default environment ${cyan(environment.name)}.`
+          : `Default environment for ${cyan(detail.project.slug)}: ${cyan(environment.name)}.`,
+      );
       info("`hush push`, `pull`, `diff`, `run` and `check` now use it unless -e is passed.");
     });
   },

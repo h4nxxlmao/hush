@@ -4,6 +4,24 @@ All notable changes to `@xnah/hush` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/).
 
+## [0.2.1] - 2026-11-01
+
+Source-only security pass focused on the child-process boundary, local file reads and the leave/rotation lifecycle.
+
+### Security
+
+- `hush run` now strips `HUSH_*` from the remote env as well as the inherited one. The previous filter ran before the merge, so a pushed `HUSH_STATE_DIR`, `HUSH_KEYCHAIN` or `HUSH_TOKEN` could reach the child. Proxy, TLS, module-loader and package-manager variables are blocked too.
+- `push`, `diff`, `check` and `example` refuse a symlinked env file whose target is outside the working directory, so a committed `.env` symlink cannot upload or read `~/.ssh/id_rsa`.
+- `writeFileNoFollow` cleans up its secret-bearing temp file when chmod or rename fails; the legacy state migration reapplies 0600 to moved key/token files.
+- `example` refuses to overwrite its own source `.env` and preserves an existing output file's mode.
+- `leave` removes legacy `.envhx.json` links and now says that the decrypted `.env` and key cache remain.
+- `push --dry-run` no longer caches the decrypted private key; `diff --version` validates the value before making a request; `use` requires `--relink` before moving a folder to another project.
+
+### Changed
+
+- `revoke` is owner-only on the server. Admins still invite and change roles, but cannot replace the owner's wrapped project key.
+- `leave` is a membership change, not a key rotation. The owner must revoke a departed member if the key needs to rotate.
+
 ## [0.2.0] - 2026-10-22
 
 Quality-of-life pass plus the security hardening from the full source audit.
