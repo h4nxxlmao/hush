@@ -60,12 +60,12 @@
     "@eslint/js": "10.0.1",
     "@hush/crypto": "workspace:*",
     "@hush/schemas": "workspace:*",
-    "@types/node": "26.6.5",
-    "eslint": "10.13.0",
+    "@types/node": "26.6.6",
+    "eslint": "10.14.0",
     "globals": "17.13.0",
     "tsup": "9.0.0",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.71.2",
+    "typescript": "7.0.2",
+    "typescript-eslint": "8.72.1",
     "vitest": "5.0.5"
   }
 }
