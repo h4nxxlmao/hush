@@ -50,9 +50,9 @@
   },
   "dependencies": {
     "@clack/prompts": "1.8.1",
-    "@napi-rs/keyring": "2.1.1",
+    "@napi-rs/keyring": "2.1.2",
     "citty": "0.2.2",
-    "dotenv": "18.0.8",
+    "dotenv": "18.0.9",
     "open": "11.0.4",
     "picocolors": "1.1.1"
   },
