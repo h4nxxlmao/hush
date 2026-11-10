@@ -4,6 +4,7 @@ import { completionCommand } from "./commands/completion";
 import { diffCommand } from "./commands/diff";
 import { doctorCommand } from "./commands/doctor";
 import { exampleCommand } from "./commands/example";
+import { exportCommand } from "./commands/export";
 import { historyCommand } from "./commands/history";
 import { initCommand } from "./commands/init";
 import { inviteCommand } from "./commands/invite";
@@ -19,6 +20,9 @@ import { pushCommand } from "./commands/push";
 import { revokeCommand } from "./commands/revoke";
 import { rollbackCommand } from "./commands/rollback";
 import { runCommand } from "./commands/run";
+import { tokensCommand } from "./commands/tokens";
+import { transferCommand } from "./commands/transfer";
+import { uninviteCommand } from "./commands/uninvite";
 import { unlockCommand } from "./commands/unlock";
 import { useCommand } from "./commands/use";
 import { whoamiCommand } from "./commands/whoami";
@@ -45,13 +49,17 @@ export const mainCommand = defineCommand({
     run: runCommand,
     use: useCommand,
     example: exampleCommand,
+    export: exportCommand,
     ls: lsCommand,
     history: historyCommand,
     rollback: rollbackCommand,
     invite: inviteCommand,
+    uninvite: uninviteCommand,
     members: membersCommand,
     revoke: revokeCommand,
+    transfer: transferCommand,
     leave: leaveCommand,
+    tokens: tokensCommand,
     key: keyCommand,
     lock: lockCommand,
     unlock: unlockCommand,

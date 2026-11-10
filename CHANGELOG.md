@@ -4,6 +4,24 @@ All notable changes to `@xnah/hush` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/).
 
+## [0.3.0] - 2026-11-10
+
+Team controls and export formats.
+
+### Added
+
+- `hush export [-f dotenv|json|shell] [-o file]`: decrypt a version for CI, containers or scripts. Stdout by default; files are written with mode 0600.
+- `hush tokens [id]`: list CLI device tokens with created/last-used state, or revoke one by id.
+- `hush transfer @user`: owner-only ownership transfer. The project key does not change, so no one needs to re-pull.
+- `hush uninvite <id>`: cancel a pending invite; its token stops working immediately.
+- `hush pull --backup`: keep a 0600 timestamped copy of the existing file before overwriting it.
+- `hush members` now prints pending invite ids so they can be cancelled.
+
+### Changed
+
+- `hush transfer` and `hush uninvite` complement the owner-only revoke/rotation flow.
+- The bundled schema adds the `ownership_transferred` and `invite_revoked` audit actions.
+
 ## [0.2.1] - 2026-11-01
 
 Source-only security pass focused on the child-process boundary, local file reads and the leave/rotation lifecycle.

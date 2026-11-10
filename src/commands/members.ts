@@ -39,9 +39,10 @@ export const membersCommand = defineCommand({
 
       if (detail.invites.length > 0) {
         out();
-        const inviteRows: string[][] = [["PENDING", "ROLE", "EXPIRES"].map((h) => dim(h))];
+        const inviteRows: string[][] = [["ID", "PENDING", "ROLE", "EXPIRES"].map((h) => dim(h))];
         for (const invite of detail.invites) {
           inviteRows.push([
+            invite.id,
             `@${invite.githubUsername}`,
             invite.role,
             relativeTime(new Date(invite.expiresAt)),

@@ -51,6 +51,11 @@ export const pullCommand = defineCommand({
       description: "Overwrite a differing local file without asking",
       default: false,
     },
+    backup: {
+      type: "boolean",
+      description: "Keep a 0600 copy of the existing file before overwriting it",
+      default: false,
+    },
   },
   run: async ({ args }) => {
     await runWithArgs(args, async () => {
@@ -129,6 +134,13 @@ export const pullCommand = defineCommand({
         }
       }
 
+      let backupPath: string | null = null;
+      if (args.backup && existsSync(outPath)) {
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        backupPath = `${outPath}.bak.${stamp}`;
+        writeFileNoFollow(backupPath, readFileSync(outPath, "utf8"), 0o600);
+      }
+
       writeFileNoFollow(outPath, remoteContent, 0o600);
       if (isJsonMode()) {
         printJson({
@@ -136,6 +148,7 @@ export const pullCommand = defineCommand({
           version: latest.version.version,
           environment: environment.name,
           file: outPath,
+          backup: backupPath,
           variables: remoteParsed.vars.size,
           sizeBytes: latest.version.sizeBytes,
         });
@@ -144,6 +157,9 @@ export const pullCommand = defineCommand({
       success(
         `Pulled v${latest.version.version} ${symbol.arrow} ${basename(outPath)} (${remoteParsed.vars.size} variables, ${bytes(latest.version.sizeBytes)}).`,
       );
+      if (backupPath) {
+        info(`Previous file kept at ${basename(backupPath)} (mode 0600).`);
+      }
       info("Decrypted on this machine. The server only ever held the ciphertext.");
     });
   },

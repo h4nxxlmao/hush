@@ -438,3 +438,8 @@ export const API_VERSION = "0.1.0";
 export const API_CLIENT_HEADER = "X-Hush-Client";
 export const roleUpdateRequestSchema = z.object({ role: roleSchema });
 export type RoleUpdateRequest = z.infer<typeof roleUpdateRequestSchema>;
+
+export const transferOwnershipRequestSchema = z.object({
+  targetUserId: z.string().min(1),
+});
+export type TransferOwnershipRequest = z.infer<typeof transferOwnershipRequestSchema>;

@@ -45,19 +45,23 @@ The whole file is one blob, so **variable names are encrypted too**. Ciphertext 
 | `hush whoami` | User, device, keychain and key status |
 | `hush init` | Create a project (generating the project key locally) or link this folder to an existing one |
 | `hush push [file] -e <env> -m "msg"` | Encrypt and upload as a new version. Stale base version → 409 with both numbers; `--force` re-reads and pushes; `--dry-run` previews without uploading |
-| `hush pull -e <env> [-o file]` | Fetch, decrypt and write. A differing local file shows a masked diff and asks first (`--force` skips) |
+| `hush pull -e <env> [-o file] [--backup]` | Fetch, decrypt and write. A differing local file shows a masked diff and asks first (`--force` skips); `--backup` keeps a 0600 timestamped copy |
 | `hush diff -e <env> [--version N] [--reveal] [--exit-code]` | Compare your file with a remote version; values masked as `••••••••` unless revealed. `--exit-code` returns 1 on drift |
 | `hush check [--example .env.example] [--remote -e dev]` | Missing/extra variables; exits 1 when something required is missing (CI and pre-commit friendly) |
 | `hush run -e <env> [--only A,B] [--except C] [--no-inherit] -- <command>` | Inject variables into a child process without writing a file; narrow the set, start from a clean environment, and forward signals and the exit code |
+| `hush export [-f dotenv\|json\|shell] [-o file]` | Decrypt a version for another tool; output defaults to stdout and a file is written 0600 |
 | `hush use [env]` | Set the default environment for this folder in `.hush.json`, or list environments and mark the current one |
 | `hush example [-o .env.example]` | Generate a value-free `.env.example` from a `.env`, preserving key order |
 | `hush ls` | Projects and environments with version, last push and size |
 | `hush history -e <env>` | Version list: number, author, time, size, message |
 | `hush rollback -e <env> <version>` | Re-encrypt an old version's content as a new version (history keeps both) |
 | `hush invite <github-username> [--role member]` | Wrap the project key for the invitee and send the invite |
-| `hush members` | Members, roles and pending invites |
+| `hush uninvite <invite-id>` | Cancel a pending invite; its token stops working immediately |
+| `hush members` | Members, roles and pending invites (with invite ids) |
 | `hush revoke <github-username>` | Owner-only: revoke and rotate. New project key, every environment with content re-encrypted, everyone else re-wrapped, all client-side |
+| `hush transfer <github-username>` | Owner-only: hand ownership to another member; the project key does not change |
 | `hush leave [-y]` | Leave a project you are a member of; the owner must transfer or delete instead |
+| `hush tokens [id]` | List CLI device tokens, or revoke one by id |
 | `hush key export` / `key import` | Move your sealed key between machines (the export is ciphertext; useless without your passphrase) |
 | `hush lock` / `unlock` | Clear or restore the cached private key |
 | `hush doctor` | API reachability, token validity, keychain, key setup, `.gitignore`, file permissions, linked project |
